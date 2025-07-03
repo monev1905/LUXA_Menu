@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const TABS = [
   { key: 'drink', label: 'Drinks' },
@@ -47,6 +47,14 @@ export default function AdminPage() {
   const [editingBrandValue, setEditingBrandValue] = useState<string>('');
   const [editingTypeId, setEditingTypeId] = useState<string | null>(null);
   const [editingTypeValue, setEditingTypeValue] = useState<string>('');
+  const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
+  const brandInputRef = useRef<HTMLInputElement>(null);
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch items for the selected tab
   useEffect(() => {
@@ -57,6 +65,11 @@ export default function AdminPage() {
       .then(data => {
         setItems(data);
         setLoading(false);
+        if (selectedTab === 'shisha') {
+          // Extract unique brands for suggestions
+          const brands = Array.from(new Set(data.map((item: any) => item.brand).filter((b: string) => typeof b === 'string' && b.trim() !== '')));
+          setBrandSuggestions(brands as string[]);
+        }
       });
   }, [selectedTab]);
 
@@ -164,12 +177,90 @@ export default function AdminPage() {
     setEditingTypeValue('');
   }
 
+  function handleExportExcel() {
+    setExporting(true);
+    fetch('/api/export-csv')
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'menu_export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        setExporting(false);
+      })
+      .catch(() => setExporting(false));
+  }
+
+  function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    setImportResult(null);
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/api/import-csv', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          setImportResult('Error: ' + data.error);
+        } else {
+          setImportResult(`Imported: ${data.drinksImported} drinks, ${data.shishaImported} shisha flavors.`);
+          // Refresh data
+          setLoading(true);
+          const endpoint = selectedTab === 'drink' ? '/api/drinks' : '/api/shisha-flavors';
+          fetch(endpoint)
+            .then(res => res.json())
+            .then(data => {
+              setItems(data);
+              setLoading(false);
+            });
+        }
+        setImporting(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      })
+      .catch(() => {
+        setImportResult('Error importing file.');
+        setImporting(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      });
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
       <header className="bg-gray-950 shadow-md py-6 mb-8">
         <h1 className="text-4xl font-extrabold text-center text-purple-300 tracking-tight">Admin Menu Management</h1>
       </header>
       <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
+        <div className="flex justify-end mb-4 gap-2">
+          <button
+            onClick={handleExportExcel}
+            className="bg-purple-700 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-purple-800"
+            disabled={exporting}
+          >
+            {exporting ? 'Exporting...' : 'Export All to Excel'}
+          </button>
+          <label className="bg-purple-700 text-white px-4 py-2 rounded cursor-pointer disabled:opacity-50 hover:bg-purple-800 flex items-center">
+            {importing ? 'Importing...' : 'Import from Excel'}
+            <input
+              type="file"
+              accept=".xlsx"
+              className="hidden"
+              onChange={handleImportExcel}
+              disabled={importing}
+              ref={fileInputRef}
+            />
+          </label>
+        </div>
+        {importResult && (
+          <div className="mb-4 text-center text-sm text-purple-300 bg-gray-800 rounded p-2">{importResult}</div>
+        )}
         <div className="flex justify-center space-x-4 mb-8">
           {TABS.map(tab => (
             <button
@@ -230,15 +321,60 @@ export default function AdminPage() {
             </div>
           )}
           {selectedTab === 'shisha' && (
-            <div>
+            <div className="relative">
               <input
                 name="brand"
                 value={form.brand}
                 onChange={handleChange}
                 placeholder="Brand"
                 className="border border-gray-700 bg-gray-900 text-white p-2 rounded w-full placeholder-gray-400"
+                autoComplete="off"
                 required
+                ref={brandInputRef}
+                onFocus={() => { setShowBrandDropdown(true); setHighlightedIndex(-1); }}
+                onBlur={() => { setTimeout(() => { setShowBrandDropdown(false); setHighlightedIndex(-1); }, 100); }}
+                onKeyDown={e => {
+                  if (!showBrandDropdown) return;
+                  const filtered = (form.brand
+                    ? brandSuggestions.filter(b => b.toLowerCase().includes(form.brand.toLowerCase()) && b !== form.brand)
+                    : brandSuggestions.filter(b => b !== form.brand)
+                  );
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setHighlightedIndex(i => (i + 1) % filtered.length);
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setHighlightedIndex(i => (i - 1 + filtered.length) % filtered.length);
+                  } else if (e.key === 'Enter' && highlightedIndex >= 0 && filtered.length > 0) {
+                    e.preventDefault();
+                    setForm(f => ({ ...f, brand: filtered[highlightedIndex] }));
+                    setShowBrandDropdown(false);
+                    setHighlightedIndex(-1);
+                    brandInputRef.current?.blur();
+                  }
+                }}
               />
+              {brandSuggestions.length > 0 && showBrandDropdown && (
+                <ul className="absolute z-10 left-0 right-0 bg-gray-800 border border-gray-700 rounded mt-1 max-h-40 overflow-y-auto">
+                  {(form.brand
+                    ? brandSuggestions.filter(b => b.toLowerCase().includes(form.brand.toLowerCase()) && b !== form.brand)
+                    : brandSuggestions.filter(b => b !== form.brand)
+                  ).map((b, i, arr) => (
+                    <li
+                      key={b}
+                      className={`px-3 py-2 cursor-pointer text-purple-200 ${highlightedIndex === i ? 'bg-purple-700 text-white' : 'hover:bg-purple-700 hover:text-white'}`}
+                      onMouseDown={() => {
+                        setForm(f => ({ ...f, brand: b }));
+                        setShowBrandDropdown(false);
+                        setHighlightedIndex(-1);
+                        brandInputRef.current?.blur();
+                      }}
+                    >
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
               <select
                 name="type"
                 value={form.type}
