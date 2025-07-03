@@ -13,20 +13,21 @@ datasource db {
   url      = "postgresql://menu_user:testpassword@localhost:5432/menu_dev"
 }
 
-model Venue {
-  id        String     @id @default(uuid())
-  name      String
-  address   String
-  menuItems MenuItem[]
-}
-
-model MenuItem {
+model Drink {
   id          String   @id @default(uuid())
   name        String
-  description String
+  description String?
   price       Float
-  category    String   // 'drink' or 'shisha'
-  isActive    Boolean  @default(true) // true = available, false = not available
-  venueId     String
-  venue       Venue    @relation(fields: [venueId], references: [id])
+  section     String?
+  isActive    Boolean  @default(true)
+}
+
+model ShishaFlavor {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  brand       String
+  type        String   // 'blond' or 'black'
+  isActive    Boolean  @default(true)
 }

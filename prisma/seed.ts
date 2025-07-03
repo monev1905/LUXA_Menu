@@ -4,48 +4,39 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Delete existing data
-  await prisma.menuItem.deleteMany();
-  await prisma.venue.deleteMany();
+  await prisma.drink.deleteMany();
+  await prisma.shishaFlavor.deleteMany();
 
-  // Create the bar venue
-  const venue = await prisma.venue.create({
-    data: {
-      name: 'Shisha Lounge',
-      address: '789 Nightlife Ave, Springfield',
-      menuItems: {
-        create: [
-          // Drinks
-          {
-            name: 'Mojito',
-            description: 'Classic rum cocktail with mint, lime, and soda.',
-            price: 8.5,
-            category: 'drink',
-          },
-          {
-            name: 'Espresso Martini',
-            description: 'Vodka, coffee liqueur, and espresso.',
-            price: 9.0,
-            category: 'drink',
-          },
-          // Shisha
-          {
-            name: 'Double Apple',
-            description: 'Traditional double apple shisha flavor.',
-            price: 15.0,
-            category: 'shisha',
-          },
-          {
-            name: 'Mint Breeze',
-            description: 'Refreshing mint shisha flavor.',
-            price: 15.0,
-            category: 'shisha',
-          },
-        ],
-      },
-    },
+  // Seed drinks
+  await prisma.drink.createMany({
+    data: [
+      { name: 'Buzz Lemonade', price: 5.0, section: 'lemonades', isActive: true },
+      { name: 'Classic Lemonade', price: 4.5, section: 'lemonades', isActive: true },
+      { name: 'Whiskey', price: 7.0, section: 'alcohol', isActive: true },
+      { name: 'Beer', price: 4.0, section: 'alcohol', isActive: true },
+      { name: 'Strawberry Milkshake', price: 5.5, section: 'smoothies', isActive: true },
+      { name: 'Banana Smoothie', price: 5.0, section: 'smoothies', isActive: true },
+      { name: 'Coca Cola', price: 3.0, section: 'softdrinks', isActive: true },
+      { name: 'Fanta', price: 3.0, section: 'softdrinks', isActive: true },
+      { name: 'Sprite', price: 3.0, section: 'softdrinks', isActive: true },
+      { name: 'Water', price: 2.0, section: 'softdrinks', isActive: true },
+      { name: 'Salted Peanuts', price: 2.5, section: 'nuts', isActive: true },
+      { name: 'Coffee', price: 2.5, section: 'hotdrinks', isActive: true },
+      { name: 'Cappuccino', price: 3.0, section: 'hotdrinks', isActive: true },
+    ],
   });
 
-  console.log('Seed data created:', { venue });
+  // Seed shisha flavors
+  await prisma.shishaFlavor.createMany({
+    data: [
+      { name: 'Must Have - Raspberry', price: 15.0, brand: 'musthave', type: 'blond', isActive: true },
+      { name: 'Darkside - Wildberry', price: 16.0, brand: 'darkside', type: 'black', isActive: true },
+      { name: 'Blackburn - Lemon Pie', price: 15.0, brand: 'blackburn', type: 'black', isActive: true },
+      { name: 'Deus - Mint', price: 15.0, brand: 'deus', type: 'blond', isActive: true },
+    ],
+  });
+
+  console.log('Seed data created');
 }
 
 main()
