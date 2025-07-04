@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
-import TabSelector from '@/components/TabSelector';
 import CategoryDropdown from '@/components/CategoryDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -30,11 +29,8 @@ interface MenuItem {
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab');
+  const tabParam = searchParams.get('tab');
   const typeParam = searchParams.get('type');
-  const [selectedTab, setSelectedTab] = useState(
-    initialTab === 'shisha' ? 'shisha' : 'drink'
-  );
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTypes, setOpenTypes] = useState<string[]>([]);
@@ -42,22 +38,22 @@ export default function MenuPage() {
 
   useEffect(() => {
     setLoading(true);
-    if (selectedTab === 'drink') {
-      fetch('/api/drinks')
-        .then(res => res.json())
-        .then(data => {
-          setItems(data);
-          setLoading(false);
-        });
-    } else if (selectedTab === 'shisha') {
+    if (tabParam === 'shisha') {
       fetch('/api/shisha-flavors')
         .then(res => res.json())
         .then(data => {
           setItems(data);
           setLoading(false);
         });
+    } else {
+      fetch('/api/drinks')
+        .then(res => res.json())
+        .then(data => {
+          setItems(data);
+          setLoading(false);
+        });
     }
-  }, [selectedTab]);
+  }, [tabParam]);
 
   // Filter by type if present
   const filteredItems = typeParam
@@ -70,14 +66,9 @@ export default function MenuPage() {
         <h1 className="text-4xl font-extrabold text-center text-purple-300 tracking-tight">Shisha Lounge Menu</h1>
       </header>
       <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
-        <TabSelector 
-          tabs={TABS} 
-          selectedTab={selectedTab} 
-          onTabChange={setSelectedTab} 
-        />
         {loading ? (
           <LoadingSpinner />
-        ) : selectedTab === 'shisha' ? (
+        ) : tabParam === 'shisha' ? (
           <div>
             {SHISHA_TYPES.map(type => (
               <CategoryDropdown
