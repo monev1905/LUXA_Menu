@@ -16,6 +16,15 @@ const DRINK_SECTIONS = [
   { key: 'hotdrinks', label: 'Hot Drinks' },
 ];
 
+const DRINK_TYPES = [
+  { key: 'lemonades', label: 'Lemonades & Iced Tea' },
+  { key: 'alcohol', label: 'Alcohol' },
+  { key: 'smoothies', label: 'Smoothies & Milkshakes' },
+  { key: 'softdrinks', label: 'Soft Drinks' },
+  { key: 'nuts', label: 'Nuts' },
+  { key: 'hotdrinks', label: 'Hot Drinks' },
+];
+
 const SHISHA_BRANDS = [
   { key: 'musthave', label: 'Must Have' },
   { key: 'darkside', label: 'Darkside' },
@@ -45,8 +54,8 @@ export default function AdminPage() {
   const [editingPriceValue, setEditingPriceValue] = useState<string>('');
   const [editingBrandId, setEditingBrandId] = useState<string | null>(null);
   const [editingBrandValue, setEditingBrandValue] = useState<string>('');
-  const [editingTypeId, setEditingTypeId] = useState<string | null>(null);
-  const [editingTypeValue, setEditingTypeValue] = useState<string>('');
+  const [editingDrinkTypeId, setEditingDrinkTypeId] = useState<string | null>(null);
+  const [editingDrinkTypeValue, setEditingDrinkTypeValue] = useState<string>('');
   const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
   const brandInputRef = useRef<HTMLInputElement>(null);
   const [showBrandDropdown, setShowBrandDropdown] = useState(false);
@@ -164,17 +173,17 @@ export default function AdminPage() {
     setEditingBrandValue('');
   }
 
-  // Save type change
-  async function handleSaveType(id: string) {
-    const endpoint = selectedTab === 'drink' ? '/api/drinks' : '/api/shisha-flavors';
+  // Save drink type change
+  async function handleSaveDrinkType(id: string) {
+    const endpoint = '/api/drinks';
     await fetch(endpoint, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, type: editingTypeValue }),
+      body: JSON.stringify({ id, type: editingDrinkTypeValue }),
     });
-    setItems(items.map(item => item.id === id ? { ...item, type: editingTypeValue } : item));
-    setEditingTypeId(null);
-    setEditingTypeValue('');
+    setItems(items.map(item => item.id === id ? { ...item, type: editingDrinkTypeValue } : item));
+    setEditingDrinkTypeId(null);
+    setEditingDrinkTypeValue('');
   }
 
   function handleExportExcel() {
@@ -442,8 +451,41 @@ export default function AdminPage() {
                       )}
                     </span>
                   </div>
-                  {item.section && (
-                    <div className="text-xs text-purple-400 mb-1">Section: {DRINK_SECTIONS.find(sec => sec.key === item.section)?.label || item.section}</div>
+                  {selectedTab === 'drink' && item.type && (
+                    <div className="text-xs text-purple-400 mb-1 flex items-center gap-2">
+                      Type: {editingDrinkTypeId === item.id ? (
+                        <>
+                          <select
+                            value={editingDrinkTypeValue}
+                            onChange={e => setEditingDrinkTypeValue(e.target.value)}
+                            className="border border-purple-400 bg-gray-800 text-white p-1 rounded text-xs"
+                          >
+                            {DRINK_TYPES.map(type => (
+                              <option key={type.key} value={type.key}>{type.label}</option>
+                            ))}
+                          </select>
+                          <button
+                            className="ml-2 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                            onClick={() => handleSaveDrinkType(item.id)}
+                            type="button"
+                          >Save</button>
+                          <button
+                            className="ml-1 px-2 py-1 bg-gray-600 text-white rounded text-xs hover:bg-gray-700"
+                            onClick={() => { setEditingDrinkTypeId(null); setEditingDrinkTypeValue(''); }}
+                            type="button"
+                          >Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          {DRINK_TYPES.find(t => t.key === item.type)?.label || item.type}
+                          <button
+                            className="ml-2 px-2 py-1 bg-yellow-600 text-white rounded text-xs hover:bg-yellow-700"
+                            onClick={() => { setEditingDrinkTypeId(item.id); setEditingDrinkTypeValue(item.type || ''); }}
+                            type="button"
+                          >Edit</button>
+                        </>
+                      )}
+                    </div>
                   )}
                   {item.brand && (
                     <div className="text-xs text-purple-400 mb-1 flex items-center gap-2">
@@ -474,43 +516,6 @@ export default function AdminPage() {
                             <button
                               className="ml-2 px-2 py-1 bg-yellow-600 text-white rounded text-xs hover:bg-yellow-700"
                               onClick={() => { setEditingBrandId(item.id); setEditingBrandValue(item.brand || ''); }}
-                              type="button"
-                            >Edit</button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-                  {item.type && (
-                    <div className="text-xs text-purple-400 mb-1 flex items-center gap-2">
-                      Type: {editingTypeId === item.id ? (
-                        <>
-                          <select
-                            value={editingTypeValue}
-                            onChange={e => setEditingTypeValue(e.target.value)}
-                            className="border border-purple-400 bg-gray-800 text-white p-1 rounded text-xs"
-                          >
-                            <option value="blond">Blond</option>
-                            <option value="black">Black</option>
-                          </select>
-                          <button
-                            className="ml-2 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
-                            onClick={() => handleSaveType(item.id)}
-                            type="button"
-                          >Save</button>
-                          <button
-                            className="ml-1 px-2 py-1 bg-gray-600 text-white rounded text-xs hover:bg-gray-700"
-                            onClick={() => { setEditingTypeId(null); setEditingTypeValue(''); }}
-                            type="button"
-                          >Cancel</button>
-                        </>
-                      ) : (
-                        <>
-                          {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                          {selectedTab === 'shisha' && (
-                            <button
-                              className="ml-2 px-2 py-1 bg-yellow-600 text-white rounded text-xs hover:bg-yellow-700"
-                              onClick={() => { setEditingTypeId(item.id); setEditingTypeValue(item.type || ''); }}
                               type="button"
                             >Edit</button>
                           )}

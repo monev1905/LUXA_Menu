@@ -18,7 +18,8 @@ model Drink {
   name        String
   description String?
   price       Float
-  section     String?
+  category    String   // 'drinks'
+  type        String   // 'lemonades', 'alcohol', etc.
   isActive    Boolean  @default(true)
 }
 
@@ -27,7 +28,8 @@ model ShishaFlavor {
   name        String
   description String?
   price       Float
+  category    String   // 'shisha'
+  type        String   // 'blond', 'black'
   brand       String
-  type        String   // 'blond' or 'black'
   isActive    Boolean  @default(true)
 }
