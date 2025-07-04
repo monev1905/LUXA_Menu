@@ -63,26 +63,35 @@ export default function MenuPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
       <header className="bg-gray-950 shadow-md py-6 mb-8">
-        <h1 className="text-4xl font-extrabold text-center text-purple-300 tracking-tight">Shisha Lounge Menu</h1>
+        <div className="flex items-center justify-between max-w-2xl mx-auto px-4">
+          <h1 className="text-4xl font-extrabold text-purple-300 tracking-tight truncate max-w-xs sm:max-w-lg mx-auto overflow-hidden text-center flex-1">Shisha Lounge Menu</h1>
+        </div>
       </header>
       <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
         {loading ? (
           <LoadingSpinner />
         ) : tabParam === 'shisha' ? (
           <div>
-            {SHISHA_TYPES.map(type => (
-              <CategoryDropdown
-                key={type.key}
-                category={type}
-                items={items}
-                openCategories={openTypes}
-                setOpenCategories={setOpenTypes}
-                openSubCategories={openBrands}
-                setOpenSubCategories={setOpenBrands}
-                subCategoryField="brand"
-                itemNameField="name"
-              />
-            ))}
+            {SHISHA_TYPES.map(type => {
+              // Get all brands for this type
+              const brands = Array.from(new Set(
+                items.filter(item => item.type === type.key && typeof item.brand === 'string' && item.brand.trim() !== '')
+                  .map(item => item.brand as string)
+              ));
+              return (
+                <CategoryDropdown
+                  key={type.key}
+                  category={type}
+                  items={items}
+                  openCategories={openTypes}
+                  setOpenCategories={setOpenTypes}
+                  openSubCategories={openTypes.includes(type.key) ? brands : []}
+                  setOpenSubCategories={setOpenBrands}
+                  subCategoryField="brand"
+                  itemNameField="name"
+                />
+              );
+            })}
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="text-center text-gray-500 py-10">No items found.</div>
