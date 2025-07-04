@@ -115,12 +115,13 @@ export default function HamburgerMenu() {
           </button>
         </div>
         <nav className="px-6 py-4 space-y-2">
-          <a
-            href="#"
+          <Link
+            href="/"
             className="block py-2 text-lg text-white hover:text-purple-300"
+            onClick={() => setOpen(false)}
           >
             Home
-          </a>
+          </Link>
           {menu.map(cat => (
             <div key={cat.key}>
               {cat.key === 'shisha' ? (

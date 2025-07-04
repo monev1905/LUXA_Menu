@@ -1,4 +1,7 @@
+"use client";
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PageHeader from '@/components/PageHeader';
 
 const cards = [
   {
@@ -28,11 +31,19 @@ const cards = [
 ];
 
 export default function HomePage() {
+  const [venueName, setVenueName] = useState('');
+
+  useEffect(() => {
+    fetch('/api/venues')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) setVenueName(data[0].name);
+      });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col">
-      <header className="bg-gray-950 shadow-md py-6 mb-8">
-        <h1 className="text-4xl font-extrabold text-center text-purple-300 tracking-tight">Shisha Lounge</h1>
-      </header>
+      <PageHeader title={venueName || '...'} />
       <main className="flex-1 flex flex-col items-center justify-center">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl px-4">
           {cards.map(card => (

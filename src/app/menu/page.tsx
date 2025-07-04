@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
 import CategoryDropdown from '@/components/CategoryDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import PageHeader from '@/components/PageHeader';
 
 const TABS = [
   { key: 'drink', label: 'Drinks' },
@@ -35,6 +36,15 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [openTypes, setOpenTypes] = useState<string[]>([]);
   const [openBrands, setOpenBrands] = useState<string[]>([]);
+  const [venueName, setVenueName] = useState('');
+
+  useEffect(() => {
+    fetch('/api/venues')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) setVenueName(data[0].name);
+      });
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -62,11 +72,7 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <header className="bg-gray-950 shadow-md py-6 mb-8">
-        <div className="flex items-center justify-between max-w-2xl mx-auto px-4">
-          <h1 className="text-4xl font-extrabold text-purple-300 tracking-tight truncate max-w-xs sm:max-w-lg mx-auto overflow-hidden text-center flex-1">Shisha Lounge Menu</h1>
-        </div>
-      </header>
+      <PageHeader title={venueName ? `${venueName} Menu` : '...'} />
       <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
         {loading ? (
           <LoadingSpinner />

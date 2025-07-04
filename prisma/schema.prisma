@@ -33,3 +33,11 @@ model ShishaFlavor {
   brand       String
   isActive    Boolean  @default(true)
 }
+
+model Venue {
+  id      String @id @default(uuid())
+  name    String
+  address String
+  phone   String
+  mapUrl  String
+}
