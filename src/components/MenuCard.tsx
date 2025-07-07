@@ -21,9 +21,9 @@ export default function MenuCard({
 }: MenuCardProps) {
   return (
     <li
-      className={`p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-200 group border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] ${!isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
+      className={`px-4 py-3 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-200 group border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] ${!isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
     >
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-center">
         <span className="text-xl font-bold text-accent group-hover:text-leaf transition-colors duration-200">
           {name}
         </span>
