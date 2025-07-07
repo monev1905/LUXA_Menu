@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
     if (!data.brand || typeof data.brand !== 'string') {
       return NextResponse.json({ error: 'Brand is required' }, { status: 400 });
     }
-    if (!data.type || (data.type !== 'blond' && data.type !== 'black')) {
-      return NextResponse.json({ error: 'Type must be "blond" or "black"' }, { status: 400 });
+    if (!data.type || (data.type !== 'blond' && data.type !== 'dark')) {
+      return NextResponse.json({ error: 'Type must be "blond" or "dark"' }, { status: 400 });
     }
     const flavor = await prisma.shishaFlavor.create({ data });
     return NextResponse.json(flavor, { status: 201 });

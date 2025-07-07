@@ -22,10 +22,14 @@ const TYPE_LABELS: Record<string, string> = {
   nuts: "Nuts",
   hotdrinks: "Hot Drinks",
   blond: "Blond",
-  black: "Black",
+  dark: "Dark",
 };
 
-export default function HamburgerMenu() {
+interface HamburgerMenuProps {
+  inHeader?: boolean;
+}
+
+export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) {
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [menu, setMenu] = useState<MenuCategory[]>([]);
@@ -67,11 +71,11 @@ export default function HamburgerMenu() {
     <>
       {/* Hamburger button */}
       <button
-        className="fixed top-4 left-4 z-50 p-2 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+        className={`${inHeader ? '' : 'fixed top-2 left-2 z-50'} p-2 rounded-md bg-jungle-dark text-accent shadow-md focus:outline-none focus:ring-2 focus:ring-accent`}
         onClick={() => setOpen(true)}
         aria-label="Open menu"
       >
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path
             stroke="currentColor"
             strokeWidth="2"
@@ -85,21 +89,21 @@ export default function HamburgerMenu() {
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 z-40 bg-gradient-to-br from-[#1a241b]/95 via-[#233524]/90 to-[#2d4a3e]/90"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Side drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-72 z-50 transform transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] shadow-2xl border-r-2 border-forest`}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b border-gray-800">
-          <span className="text-2xl font-bold text-white">Menu</span>
+        <div className="flex items-center justify-between px-6 py-6 border-b border-brown">
+          <span className="text-2xl font-bold text-accent">Menu</span>
           <button
-            className="text-gray-400 hover:text-white focus:outline-none"
+            className="text-leaf hover:text-accent focus:outline-none"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
           >
@@ -117,7 +121,7 @@ export default function HamburgerMenu() {
         <nav className="px-6 py-4 space-y-2">
           <Link
             href="/"
-            className="block py-2 text-lg text-white hover:text-purple-300"
+            className="block py-2 text-lg text-accent hover:text-leaf"
             onClick={() => setOpen(false)}
           >
             Home
@@ -125,17 +129,38 @@ export default function HamburgerMenu() {
           {menu.map(cat => (
             <div key={cat.key}>
               {cat.key === 'shisha' ? (
-                <Link
-                  href="/menu?tab=shisha"
-                  className="block py-2 text-lg text-white hover:text-purple-300 uppercase tracking-wider text-xs font-bold"
-                  onClick={() => setOpen(false)}
-                >
-                  {cat.label}
-                </Link>
+                <>
+                  <button
+                    className={`w-full flex items-center justify-between py-2 text-left text-leaf uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-accent' : ''}`}
+                    onClick={() => setOpenCategory(openCategory === cat.key ? null : cat.key)}
+                    aria-expanded={openCategory === cat.key}
+                  >
+                    {cat.label}
+                    <span>{openCategory === cat.key ? '▲' : '▼'}</span>
+                  </button>
+                  {openCategory === cat.key && (
+                    <div className="pl-4 space-y-1">
+                      <Link
+                        href="/menu?tab=shisha&type=blond"
+                        className="block py-2 text-base text-accent hover:text-leaf"
+                        onClick={() => setOpen(false)}
+                      >
+                        Blond Leaf
+                      </Link>
+                      <Link
+                        href="/menu?tab=shisha&type=dark"
+                        className="block py-2 text-base text-accent hover:text-leaf"
+                        onClick={() => setOpen(false)}
+                      >
+                        Dark Leaf
+                      </Link>
+                    </div>
+                  )}
+                </>
               ) : (
                 <>
                   <button
-                    className={`w-full flex items-center justify-between py-2 text-left text-gray-400 uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-purple-300' : ''}`}
+                    className={`w-full flex items-center justify-between py-2 text-left text-leaf uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-accent' : ''}`}
                     onClick={() => setOpenCategory(openCategory === cat.key ? null : cat.key)}
                     aria-expanded={openCategory === cat.key}
                   >
@@ -149,8 +174,8 @@ export default function HamburgerMenu() {
                       {cat.types.map(type => (
                         <Link
                           key={type.key}
-                          href={`/menu?tab=${cat.key}&type=${type.key}`}
-                          className="block py-2 text-base text-white hover:text-purple-300"
+                          href={cat.key === 'drinks' ? `/menu?tab=drink&section=${type.key}` : `/menu?tab=${cat.key}&type=${type.key}`}
+                          className="block py-2 text-base text-accent hover:text-leaf"
                           onClick={() => setOpen(false)}
                         >
                           {type.label}

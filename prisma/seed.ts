@@ -29,10 +29,10 @@ async function main() {
   // Seed shisha flavors
   await prisma.shishaFlavor.createMany({
     data: [
-      { name: 'Must Have - Raspberry', price: 15.0, category: 'shisha', brand: 'musthave', type: 'blond', isActive: true },
-      { name: 'Darkside - Wildberry', price: 16.0, category: 'shisha', brand: 'darkside', type: 'black', isActive: true },
-      { name: 'Blackburn - Lemon Pie', price: 15.0, category: 'shisha', brand: 'blackburn', type: 'black', isActive: true },
-      { name: 'Deus - Mint', price: 15.0, category: 'shisha', brand: 'deus', type: 'blond', isActive: true },
+      { name: 'Raspberry', price: 15.0, category: 'shisha', brand: 'musthave', type: 'blond', isActive: true },
+      { name: 'Wildberry', price: 16.0, category: 'shisha', brand: 'darkside', type: 'dark', isActive: true },
+      { name: 'Lemon Pie', price: 15.0, category: 'shisha', brand: 'blackburn', type: 'dark', isActive: true },
+      { name: 'Mint', price: 15.0, category: 'shisha', brand: 'deus', type: 'blond', isActive: true },
     ],
   });
 
@@ -56,3 +56,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+ 

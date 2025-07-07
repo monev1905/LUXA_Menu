@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
 import CategoryDropdown from '@/components/CategoryDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 const TABS = [
   { key: 'drink', label: 'Drinks' },
@@ -14,7 +15,16 @@ const TABS = [
 
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
-  { key: 'black', label: 'Black' },
+  { key: 'dark', label: 'Dark' },
+];
+
+const DRINK_TYPES = [
+  { key: 'lemonades', label: 'Lemonades & Iced Tea', emoji: '🍋' },
+  { key: 'alcohol', label: 'Alcohol', emoji: '🥃' },
+  { key: 'smoothies', label: 'Smoothies & Milkshakes', emoji: '🥤' },
+  { key: 'softdrinks', label: 'Soft Drinks', emoji: '🥤' },
+  { key: 'nuts', label: 'Nuts', emoji: '🥜' },
+  { key: 'hotdrinks', label: 'Hot Drinks', emoji: '☕' },
 ];
 
 interface MenuItem {
@@ -30,13 +40,19 @@ interface MenuItem {
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tabParam = searchParams.get('tab');
   const typeParam = searchParams.get('type');
+  const sectionParam = searchParams.get('section');
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTypes, setOpenTypes] = useState<string[]>([]);
   const [openBrands, setOpenBrands] = useState<string[]>([]);
   const [venueName, setVenueName] = useState('');
+  const headerRef = useRef<HTMLDivElement>(null);
+  const tocRef = useRef<HTMLDivElement>(null);
+  const [dynamicPadding, setDynamicPadding] = useState(0);
+  const [shishaType, setShishaType] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/venues')
@@ -65,44 +81,159 @@ export default function MenuPage() {
     }
   }, [tabParam]);
 
-  // Filter by type if present
-  const filteredItems = typeParam
-    ? items.filter(item => item.type === typeParam)
-    : items;
+  useEffect(() => {
+    if (tabParam === 'shisha' && headerRef.current && tocRef.current) {
+      setDynamicPadding(headerRef.current.offsetHeight + tocRef.current.offsetHeight + 16); // 16px extra spacing
+    } else {
+      setDynamicPadding(0);
+    }
+  }, [tabParam, venueName, items]);
+
+  // Filter by type if present (for shisha) or section (for drinks)
+  const filteredItems = (tabParam === 'shisha' && (typeParam || shishaType))
+    ? items.filter(item => item.type === (typeParam || shishaType))
+    : (tabParam === 'drink' && sectionParam)
+      ? items.filter(item => item.type === sectionParam)
+      : items;
+
+  // Show back button whenever in shisha or drinks menu
+  const showBackButton = tabParam === 'shisha' || tabParam === 'drink';
+  const handleBack = () => {
+    if (tabParam === 'shisha') {
+      if (typeParam || shishaType) {
+        setShishaType(null);
+        router.replace('/menu?tab=shisha');
+      } else {
+        router.replace('/');
+      }
+    } else if (tabParam === 'drink') {
+      if (sectionParam) {
+        router.replace('/menu?tab=drink');
+      } else {
+        router.replace('/');
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <PageHeader title={venueName ? `${venueName} Menu` : '...'} />
-      <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+      {/* Green grid background */}
+      <div
+        className="fixed inset-0 w-full h-full -z-10"
+        style={{
+          backgroundColor: '#233524',
+          backgroundImage: `
+            linear-gradient(135deg, rgba(34,53,36,0.98) 0%, rgba(44,66,50,0.98) 100%),
+            repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px),
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px)
+          `,
+          backgroundSize: 'cover, 40px 40px, 40px 40px',
+          backgroundBlendMode: 'overlay',
+        }}
+        aria-hidden="true"
+      />
+      {/* Hexagon SVG pattern overlay */}
+      <svg className="fixed inset-0 w-full h-full -z-10 opacity-20 pointer-events-none" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="hexPattern" width="48" height="55.425" patternUnits="userSpaceOnUse" patternTransform="scale(1)">
+            <polygon points="24,0 48,13.856 48,41.568 24,55.425 0,41.568 0,13.856" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hexPattern)" />
+      </svg>
+      {/* Animated shine effect */}
+      <div className="fixed inset-0 w-full h-full -z-10 pointer-events-none" style={{overflow: 'hidden'}}>
+        <div className="absolute w-[150%] h-[60%] left-[-25%] top-[40%] opacity-10 rotate-12 animate-shine" style={{background: 'linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0) 100%)'}} />
+      </div>
+      <PageHeader
+        title={venueName ? `${venueName} Menu` : '...'}
+        leftSlot={<HamburgerMenu inHeader />}
+        rightSlot={showBackButton && (
+          <button
+            onClick={handleBack}
+            className="p-2 rounded-md bg-jungle-dark text-accent hover:bg-leaf focus:outline-none focus:ring-2 focus:ring-accent"
+            aria-label="Back"
+          >
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
+      />
+      <main className="w-full min-h-[60vh] flex flex-col items-center p-6 bg-transparent">
         {loading ? (
           <LoadingSpinner />
+        ) : tabParam === 'shisha' && !typeParam && !shishaType ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start bg-transparent">
+            <button
+              className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+              onClick={() => setShishaType('blond')}
+            >
+              <span className="text-5xl mb-4">🍃</span>
+              Blond Leaf
+            </button>
+            <button
+              className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+              onClick={() => setShishaType('dark')}
+            >
+              <span className="text-5xl mb-4">🌑</span>
+              Dark Leaf
+            </button>
+          </div>
+        ) : tabParam === 'drink' && !sectionParam ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start">
+            {DRINK_TYPES.map(type => (
+              <button
+                key={type.key}
+                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+                onClick={() => router.replace(`/menu?tab=drink&section=${type.key}`)}
+              >
+                <span className="text-5xl mb-4">{type.emoji}</span>
+                {type.label}
+              </button>
+            ))}
+          </div>
         ) : tabParam === 'shisha' ? (
-          <div>
+          <>
             {SHISHA_TYPES.map(type => {
-              // Get all brands for this type
+              // Only show brands for the selected type (shishaType or typeParam)
+              const activeType = typeParam || shishaType;
+              if (activeType && activeType !== type.key) return null;
               const brands = Array.from(new Set(
                 items.filter(item => item.type === type.key && typeof item.brand === 'string' && item.brand.trim() !== '')
                   .map(item => item.brand as string)
               ));
-              return (
-                <CategoryDropdown
-                  key={type.key}
-                  category={type}
-                  items={items}
-                  openCategories={openTypes}
-                  setOpenCategories={setOpenTypes}
-                  openSubCategories={openTypes.includes(type.key) ? brands : []}
-                  setOpenSubCategories={setOpenBrands}
-                  subCategoryField="brand"
-                  itemNameField="name"
-                />
-              );
+              return brands.map(brand => {
+                const brandItems = items.filter(item => item.type === type.key && item.brand === brand);
+                return (
+                  <div key={brand} id={`shisha-${type.key}-${brand.replace(/\s+/g, '-')}`} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
+                    <button
+                      className={`w-full text-left px-4 py-3 rounded-lg border-2 ${openBrands.includes(brand) ? 'border-accent' : 'border-forest'} bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] text-xl font-semibold text-accent flex justify-between items-center focus:outline-none transition-all duration-200 hover:border-leaf`}
+                      onClick={() => setOpenBrands(openBrands.includes(brand)
+                        ? openBrands.filter(b => b !== brand)
+                        : [brand])}
+                    >
+                      {brand} <span>{openBrands.includes(brand) ? '▲' : '▼'}</span>
+                    </button>
+                    {openBrands.includes(brand) && (
+                      <ul className="mt-2 space-y-2 w-full">
+                        {brandItems.map(item => (
+                          <li key={item.id} className={`w-[90%] mx-auto p-3 rounded-lg flex justify-between items-center border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+                            <span className="text-accent font-normal">{item.name}</span>
+                            <span className="text-leaf font-semibold">${item.price.toFixed(2)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              });
             })}
-          </div>
+          </>
         ) : filteredItems.length === 0 ? (
           <div className="text-center text-gray-500 py-10">No items found.</div>
         ) : (
-          <ul className="space-y-6">
+          <ul className="space-y-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
             {filteredItems.map(item => (
               <MenuCard
                 key={item.id}

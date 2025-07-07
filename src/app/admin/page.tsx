@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
+import PageHeader from '@/components/PageHeader';
 
 const TABS = [
   { key: 'drink', label: 'Drinks' },
@@ -242,20 +243,18 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <header className="bg-gray-950 shadow-md py-6 mb-8">
-        <h1 className="text-4xl font-extrabold text-center text-purple-300 tracking-tight">Admin Menu Management</h1>
-      </header>
-      <main className="max-w-2xl mx-auto p-6 bg-gray-900 rounded-2xl shadow-xl">
+    <div className="min-h-screen bg-jungle flex flex-col">
+      <PageHeader title="Admin Menu Management" />
+      <main className="max-w-2xl mx-auto p-6 bg-jungle-light rounded-2xl shadow-xl">
         <div className="flex justify-end mb-4 gap-2">
           <button
             onClick={handleExportExcel}
-            className="bg-purple-700 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-purple-800"
+            className="bg-leaf text-jungle-dark px-4 py-2 rounded disabled:opacity-50 hover:bg-accent hover:text-jungle-dark"
             disabled={exporting}
           >
             {exporting ? 'Exporting...' : 'Export All to Excel'}
           </button>
-          <label className="bg-purple-700 text-white px-4 py-2 rounded cursor-pointer disabled:opacity-50 hover:bg-purple-800 flex items-center">
+          <label className="bg-leaf text-jungle-dark px-4 py-2 rounded cursor-pointer disabled:opacity-50 hover:bg-accent hover:text-jungle-dark flex items-center">
             {importing ? 'Importing...' : 'Import from Excel'}
             <input
               type="file"
@@ -268,20 +267,20 @@ export default function AdminPage() {
           </label>
         </div>
         {importResult && (
-          <div className="mb-4 text-center text-sm text-purple-300 bg-gray-800 rounded p-2">{importResult}</div>
+          <div className="mb-4 text-center text-sm text-accent bg-jungle-light rounded p-2">{importResult}</div>
         )}
         <div className="flex justify-center space-x-4 mb-8">
           {TABS.map(tab => (
             <button
               key={tab.key}
-              className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 border-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${selectedTab === tab.key ? 'bg-purple-700 text-white border-purple-700 shadow' : 'bg-gray-800 text-purple-200 border-purple-900 hover:bg-purple-900'}`}
+              className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 border-2 focus:outline-none focus:ring-2 focus:ring-accent ${selectedTab === tab.key ? 'bg-accent text-jungle-dark border-accent shadow' : 'bg-jungle-light text-accent border-brown hover:bg-leaf'}`}
               onClick={() => setSelectedTab(tab.key)}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <form onSubmit={handleSubmit} className="mb-8 space-y-2 bg-gray-800 p-4 rounded">
+        <form onSubmit={handleSubmit} className="mb-8 space-y-2 bg-jungle-light p-4 rounded">
           <div>
             <input
               name="name"
@@ -393,7 +392,7 @@ export default function AdminPage() {
               >
                 <option value="" disabled>Select type</option>
                 <option value="blond">Blond</option>
-                <option value="black">Black</option>
+                <option value="dark">Dark</option>
               </select>
             </div>
           )}
