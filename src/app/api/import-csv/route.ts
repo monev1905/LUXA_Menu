@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(new Uint8Array(arrayBuffer as ArrayBuffer));
+    const buffer = Buffer.from(arrayBuffer);
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(buffer);
@@ -24,12 +24,26 @@ export async function POST(req: NextRequest) {
       const rows = drinksSheet.getSheetValues().slice(2); // skip null and header
       for (const row of rows) {
         if (!Array.isArray(row)) continue;
-        const [ , id, name, description, price, section, category, type, isActive ] = row;
-        if (!name || !price || !type) continue;
+        const [ , id, name, description, price, section, isActive ] = row;
+        if (!name || !price) continue;
         await prisma.drink.upsert({
-          where: { id: id || '' },
-          update: { name, description, price: Number(price), section, category: category || 'Uncategorized', type, isActive: Boolean(isActive) },
-          create: { name, description, price: Number(price), section, category: category || 'Uncategorized', type, isActive: Boolean(isActive) },
+          where: { id: String(id || '') },
+          update: { 
+            name: String(name), 
+            description: description ? String(description) : null, 
+            price: Number(price), 
+            category: 'drinks',
+            type: section ? String(section) : '',
+            isActive: isActive === true || isActive === 'TRUE' || isActive === 1 || isActive === '1' 
+          },
+          create: { 
+            name: String(name), 
+            description: description ? String(description) : null, 
+            price: Number(price), 
+            category: 'drinks',
+            type: section ? String(section) : '',
+            isActive: isActive === true || isActive === 'TRUE' || isActive === 1 || isActive === '1' 
+          },
         });
         drinksImported++;
       }
@@ -45,9 +59,25 @@ export async function POST(req: NextRequest) {
         const [ , id, name, description, price, brand, type, isActive ] = row;
         if (!name || !price || !brand || !type) continue;
         await prisma.shishaFlavor.upsert({
-          where: { id: id || '' },
-          update: { name, description, price: Number(price), brand, type, category: 'shisha', isActive: Boolean(isActive) },
-          create: { name, description, price: Number(price), brand, type, category: 'shisha', isActive: Boolean(isActive) },
+          where: { id: String(id || '') },
+          update: { 
+            name: String(name), 
+            description: description ? String(description) : null, 
+            price: Number(price), 
+            brand: String(brand), 
+            type: String(type), 
+            category: 'shisha', 
+            isActive: isActive === true || isActive === 'TRUE' || isActive === 1 || isActive === '1' 
+          },
+          create: { 
+            name: String(name), 
+            description: description ? String(description) : null, 
+            price: Number(price), 
+            brand: String(brand), 
+            type: String(type), 
+            category: 'shisha', 
+            isActive: isActive === true || isActive === 'TRUE' || isActive === 1 || isActive === '1' 
+          },
         });
         shishaImported++;
       }

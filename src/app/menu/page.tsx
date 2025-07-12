@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
-import CategoryDropdown from '@/components/CategoryDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
@@ -165,32 +164,35 @@ export default function MenuPage() {
           <LoadingSpinner />
         ) : tabParam === 'shisha' && !typeParam && !shishaType ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start bg-transparent">
-            <button
-              className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+            <MenuCard
+              name="Blond Leaf"
+              description=""
+              price={0}
+              isActive={true}
               onClick={() => setShishaType('blond')}
-            >
-              <span className="text-5xl mb-4">🍃</span>
-              Blond Leaf
-            </button>
-            <button
-              className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+              fontSize="text-xl"
+            />
+            <MenuCard
+              name="Dark Leaf"
+              description=""
+              price={0}
+              isActive={true}
               onClick={() => setShishaType('dark')}
-            >
-              <span className="text-5xl mb-4">🌑</span>
-              Dark Leaf
-            </button>
+              fontSize="text-xl"
+            />
           </div>
         ) : tabParam === 'drink' && !sectionParam ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start">
             {DRINK_TYPES.map(type => (
-              <button
+              <MenuCard
                 key={type.key}
-                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-brown bg-jungle-light/80 hover:bg-leaf transition-colors shadow text-accent text-xl font-bold focus:outline-none"
+                name={type.label}
+                description={undefined}
+                price={0}
+                isActive={true}
                 onClick={() => router.replace(`/menu?tab=drink&section=${type.key}`)}
-              >
-                <span className="text-5xl mb-4">{type.emoji}</span>
-                {type.label}
-              </button>
+                fontSize="text-xl"
+              />
             ))}
           </div>
         ) : tabParam === 'shisha' ? (
@@ -235,17 +237,19 @@ export default function MenuPage() {
         ) : (
           <ul className="space-y-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
             {filteredItems.map(item => (
-              <MenuCard
+              <li
                 key={item.id}
-                id={item.id}
-                name={item.name}
-                description={item.description}
-                price={item.price}
-                isActive={item.isActive}
-                type={item.type}
-                brand={item.brand}
-                category={item.category}
-              />
+                className={`w-[90%] mx-auto p-4 rounded-xl flex flex-col border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] shadow-md transition-all duration-200 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
+                style={{ fontFamily: 'sans-serif', fontWeight: 500, letterSpacing: '0.01em' }}
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-lg text-leaf font-bold">{item.name}</span>
+                  <span className="text-leaf font-semibold text-base">${item.price.toFixed(2)}</span>
+                </div>
+                {item.description && (
+                  <div className="text-accent text-sm mb-1" style={{ fontFamily: 'monospace', fontWeight: 400 }}>{item.description}</div>
+                )}
+              </li>
             ))}
           </ul>
         )}

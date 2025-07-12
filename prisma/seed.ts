@@ -6,36 +6,9 @@ async function main() {
   // Delete existing data
   await prisma.drink.deleteMany();
   await prisma.shishaFlavor.deleteMany();
+  await prisma.venue.deleteMany();
 
-  // Seed drinks
-  await prisma.drink.createMany({
-    data: [
-      { name: 'Buzz Lemonade', price: 5.0, category: 'drinks', type: 'lemonades', isActive: true },
-      { name: 'Classic Lemonade', price: 4.5, category: 'drinks', type: 'lemonades', isActive: true },
-      { name: 'Whiskey', price: 7.0, category: 'drinks', type: 'alcohol', isActive: true },
-      { name: 'Beer', price: 4.0, category: 'drinks', type: 'alcohol', isActive: true },
-      { name: 'Strawberry Milkshake', price: 5.5, category: 'drinks', type: 'smoothies', isActive: true },
-      { name: 'Banana Smoothie', price: 5.0, category: 'drinks', type: 'smoothies', isActive: true },
-      { name: 'Coca Cola', price: 3.0, category: 'drinks', type: 'softdrinks', isActive: true },
-      { name: 'Fanta', price: 3.0, category: 'drinks', type: 'softdrinks', isActive: true },
-      { name: 'Sprite', price: 3.0, category: 'drinks', type: 'softdrinks', isActive: true },
-      { name: 'Water', price: 2.0, category: 'drinks', type: 'softdrinks', isActive: true },
-      { name: 'Salted Peanuts', price: 2.5, category: 'drinks', type: 'nuts', isActive: true },
-      { name: 'Coffee', price: 2.5, category: 'drinks', type: 'hotdrinks', isActive: true },
-      { name: 'Cappuccino', price: 3.0, category: 'drinks', type: 'hotdrinks', isActive: true },
-    ],
-  });
-
-  // Seed shisha flavors
-  await prisma.shishaFlavor.createMany({
-    data: [
-      { name: 'Raspberry', price: 15.0, category: 'shisha', brand: 'musthave', type: 'blond', isActive: true },
-      { name: 'Wildberry', price: 16.0, category: 'shisha', brand: 'darkside', type: 'dark', isActive: true },
-      { name: 'Lemon Pie', price: 15.0, category: 'shisha', brand: 'blackburn', type: 'dark', isActive: true },
-      { name: 'Mint', price: 15.0, category: 'shisha', brand: 'deus', type: 'blond', isActive: true },
-    ],
-  });
-
+  // Seed venue only
   await prisma.venue.create({
     data: {
       name: 'Shisha Lounge',
@@ -45,7 +18,7 @@ async function main() {
     }
   });
 
-  console.log('Seed data created');
+  console.log('Database reset - only venue data created');
 }
 
 main()

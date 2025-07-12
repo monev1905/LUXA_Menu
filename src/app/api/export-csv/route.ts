@@ -19,7 +19,7 @@ export async function GET() {
     { header: 'Name', key: 'name', width: 24 },
     { header: 'Description', key: 'description', width: 32 },
     { header: 'Price', key: 'price', width: 10 },
-    { header: 'Section', key: 'section', width: 16 },
+    { header: 'Type', key: 'type', width: 16 },
     { header: 'isActive', key: 'isActive', width: 10 },
   ];
   drinks.forEach((drink: any) => drinksSheet.addRow(drink));

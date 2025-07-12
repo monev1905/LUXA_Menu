@@ -3,19 +3,20 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
+import MenuCard from '@/components/MenuCard';
 
 const cards = [
   {
     key: 'drink',
     label: 'Drinks',
     href: '/menu?tab=drink',
-    icon: <span className="text-6xl mb-4">🍋</span>,
+    icon: null,
   },
   {
     key: 'shisha',
     label: 'Shisha',
     href: '/menu?tab=shisha',
-    icon: <span className="text-6xl mb-4">🌑</span>,
+    icon: null,
   },
 ];
 
@@ -49,14 +50,13 @@ export default function HomePage() {
       <main className="flex-1 flex flex-col items-center justify-center">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl px-4">
           {cards.map(card => (
-            <Link
+            <MenuCard
               key={card.key}
+              name={card.label}
               href={card.href}
-              className="bg-jungle-light/70 backdrop-blur-md rounded-2xl shadow-xl p-8 flex flex-col items-center border-2 border-brown hover:border-accent transition-all duration-200 group"
-            >
-              {card.icon}
-              <span className="text-2xl font-bold text-accent group-hover:text-leaf mt-2">{card.label}</span>
-            </Link>
+              bgImage={card.key === 'shisha' ? '/hookah.png' : card.key === 'drink' ? '/cocktail.png' : undefined}
+              minHeight="h-[250px]"
+            />
           ))}
         </div>
       </main>
