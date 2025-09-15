@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -37,7 +37,7 @@ interface MenuItem {
   brand?: string;
 }
 
-export default function MenuPage() {
+function MenuContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab');
@@ -255,5 +255,13 @@ export default function MenuPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MenuContent />
+    </Suspense>
   );
 } 

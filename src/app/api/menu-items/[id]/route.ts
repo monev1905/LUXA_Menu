@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   _req: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = await params;
   try {
-    await prisma.menuItem.delete({ where: { id } });
+    await prisma.drink.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Item not found' }, { status: 404 });
@@ -16,12 +16,12 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = await params;
   try {
     const data = await req.json();
-    const updated = await prisma.menuItem.update({
+    const updated = await prisma.drink.update({
       where: { id },
       data,
     });
