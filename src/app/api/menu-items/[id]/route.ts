@@ -5,7 +5,7 @@ export async function DELETE(
   _req: Request,
   context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
   try {
     await prisma.menuItem.delete({ where: { id } });
     return NextResponse.json({ success: true });
@@ -18,7 +18,7 @@ export async function PATCH(
   req: Request,
   context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
   try {
     const data = await req.json();
     const updated = await prisma.menuItem.update({
