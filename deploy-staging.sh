@@ -8,28 +8,28 @@ echo "🚀 Deploying LUXA Menu to staging..."
 # Navigate to project directory
 cd /var/www/luxa-menu-staging
 
-# Pull latest changes from repository
-echo "📥 Pulling latest changes from repository..."
-git pull origin staging
+# Pull latest changes from main branch
+git pull origin main
 
-# Install/update dependencies
-echo "📦 Installing/updating dependencies..."
+# Install dependencies
 npm install
 
-# Build the application
-echo "🔨 Building application..."
-npm run build -- --no-lint
+# Generate Prisma client
+echo "🔧 Generating Prisma client..."
+npm run generate
 
 # Run database migrations
 echo "️ Running database migrations..."
 npx prisma migrate deploy
 
-# Seed database (optional - uncomment if needed)
-# echo "🌱 Seeding database..."
-# npm run seed
+# Seed the database
+echo "🌱 Seeding database..."
+npm run seed
 
-# Restart PM2 application
-echo "🔄 Restarting staging application..."
+# Build the application
+npm run build -- --no-lint
+
+# Restart PM2 process
 pm2 restart luxa-menu-staging
 
 echo "✅ Staging deployment complete!"
