@@ -20,14 +20,13 @@ fi
 # Additional safety check - confirm production deployment
 echo "⚠️  WARNING: You are about to deploy to PRODUCTION!"
 echo "Current directory: $PWD"
-echo "Are you sure? (type 'yes' to continue)"
-read confirmation
-if [[ "$confirmation" != "yes" ]]; then
+read -p "Are you sure? (type 'yes' to continue): " confirm
+if [[ "$confirm" != "yes" ]]; then
     echo "❌ Production deployment cancelled"
     exit 1
 fi
 
-echo "�� Deploying to PRODUCTION..."
+echo " Deploying to PRODUCTION..."
 
 # Navigate to project directory
 cd /var/www/luxa-menu
@@ -37,7 +36,7 @@ echo "📥 Pulling latest changes from repository..."
 git pull origin main
 
 # Install/update dependencies
-echo "�� Installing/updating dependencies..."
+echo " Installing/updating dependencies..."
 npm install
 
 # Generate Prisma client
@@ -49,7 +48,7 @@ echo "🔨 Building application..."
 npm run build -- --no-lint
 
 # Run database migrations
-echo "��️ Running database migrations..."
+echo "️ Running database migrations..."
 npx prisma migrate deploy
 
 # Seed database (optional - uncomment if needed)
@@ -61,4 +60,4 @@ echo "🔄 Restarting application..."
 pm2 restart luxa-menu
 
 echo "✅ Production deployment complete!"
-echo "�� Your app is available at: http://noirvarna.com" 
+echo " Your app is available at: http://noirvarna.com" 
