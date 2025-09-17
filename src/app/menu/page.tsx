@@ -7,11 +7,6 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
 
-const TABS = [
-  { key: 'drink', label: 'Drinks' },
-  { key: 'shisha', label: 'Shisha' },
-];
-
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
   { key: 'dark', label: 'Dark' },
@@ -103,34 +98,19 @@ function MenuContent() {
         setShishaType(null);
         router.replace('/menu?tab=shisha');
       } else {
-        router.replace('/');
+        router.replace('/menu');
       }
     } else if (tabParam === 'drink') {
       if (sectionParam) {
         router.replace('/menu?tab=drink');
       } else {
-        router.replace('/');
+        router.replace('/menu');
       }
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden">
-      {/* Green grid background */}
-      <div
-        className="fixed inset-0 w-full h-full -z-10"
-        style={{
-          backgroundColor: '#233524',
-          backgroundImage: `
-            linear-gradient(135deg, rgba(34,53,36,0.98) 0%, rgba(44,66,50,0.98) 100%),
-            repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px),
-            repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px)
-          `,
-          backgroundSize: 'cover, 40px 40px, 40px 40px',
-          backgroundBlendMode: 'overlay',
-        }}
-        aria-hidden="true"
-      />
       {/* Hexagon SVG pattern overlay */}
       <svg className="fixed inset-0 w-full h-full -z-10 opacity-20 pointer-events-none" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -159,9 +139,29 @@ function MenuContent() {
           </button>
         )}
       />
-      <main className="w-full min-h-[60vh] flex flex-col items-center p-6 bg-transparent">
+      <main className="w-full min-h-[60vh] flex flex-col items-center p-8 bg-transparent">
         {loading ? (
           <LoadingSpinner />
+        ) : !tabParam ? (
+          // Show main menu cards when no tab is selected
+          <div className="flex-1 flex flex-col items-center justify-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl px-4">
+              <MenuCard
+                key="drink"
+                name="Drinks"
+                href="/menu?tab=drink"
+                bgImage="/cocktail.png"
+                minHeight="h-[10rem]"
+              />
+              <MenuCard
+                key="shisha"
+                name="Shisha"
+                href="/menu?tab=shisha"
+                bgImage="/hookah.png"
+                minHeight="h-[10rem]"
+              />
+            </div>
+          </div>
         ) : tabParam === 'shisha' && !typeParam && !shishaType ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start bg-transparent">
             <MenuCard
@@ -210,19 +210,31 @@ function MenuContent() {
                 return (
                   <div key={brand} id={`shisha-${type.key}-${brand.replace(/\s+/g, '-')}`} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
                     <button
-                      className={`w-full text-left px-4 py-3 rounded-lg border-2 ${openBrands.includes(brand) ? 'border-accent' : 'border-forest'} bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] text-xl font-semibold text-accent flex justify-between items-center focus:outline-none transition-all duration-200 hover:border-leaf`}
+                      className={`w-full text-left px-4 py-3 rounded-lg border-2 ${openBrands.includes(brand) ? 'border-accent' : 'border-gray-600'} text-xl font-semibold text-accent flex justify-between items-center focus:outline-none transition-all duration-200 hover:border-leaf`}
+                      style={{ fontFamily: 'CardFont, sans-serif' }}
                       onClick={() => setOpenBrands(openBrands.includes(brand)
                         ? openBrands.filter(b => b !== brand)
                         : [brand])}
                     >
-                      {brand} <span>{openBrands.includes(brand) ? '▲' : '▼'}</span>
+                      {brand} 
+                      <span className="ml-2 transition-transform duration-200">
+                        {openBrands.includes(brand) ? (
+                          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        ) : (
+                          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </span>
                     </button>
                     {openBrands.includes(brand) && (
                       <ul className="mt-2 space-y-2 w-full">
                         {brandItems.map(item => (
-                          <li key={item.id} className={`w-[90%] mx-auto p-3 rounded-lg flex justify-between items-center border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
-                            <span className="text-accent font-normal">{item.name}</span>
-                            <span className="text-leaf font-semibold">${item.price.toFixed(2)}</span>
+                          <li key={item.id} className={`w-[90%] mx-auto p-3 rounded-lg flex justify-between items-center border-2 border-gray-600 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+                            <span className="text-accent font-normal" style={{ fontFamily: 'monospace', fontWeight: 400 }}>{item.name}</span>
+                            <span className="text-leaf font-semibold" style={{ fontFamily: 'monospace', fontWeight: 400 }}>${item.price.toFixed(2)}</span>
                           </li>
                         ))}
                       </ul>
@@ -239,8 +251,8 @@ function MenuContent() {
             {filteredItems.map(item => (
               <li
                 key={item.id}
-                className={`w-[90%] mx-auto p-4 rounded-xl flex flex-col border-2 border-forest bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] shadow-md transition-all duration-200 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
-                style={{ fontFamily: 'sans-serif', fontWeight: 500, letterSpacing: '0.01em' }}
+                className={`w-[90%] mx-auto p-4 rounded-xl flex flex-col border-2 border-gray-600 shadow-md transition-all duration-200 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
+                style={{ fontFamily: 'CardFont, sans-serif', fontWeight: 500, letterSpacing: '0.01em' }}
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-lg text-leaf font-bold">{item.name}</span>

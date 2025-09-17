@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
 import MenuCard from '@/components/MenuCard';
+import LogoLoader from '@/components/LogoLoader';
 
 const cards = [
   {
@@ -22,6 +23,8 @@ const cards = [
 
 export default function HomePage() {
   const [venueName, setVenueName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/venues')
@@ -31,17 +34,17 @@ export default function HomePage() {
       });
   }, []);
 
+  const handleWelcome = () => {
+    setLoading(false);
+    router.push('/menu');
+  };
+
+  if (loading) {
+    return <LogoLoader onWelcome={handleWelcome} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Simple static background */}
-      <div
-        className="fixed inset-0 w-full h-full -z-10 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/background.png')",
-          backgroundColor: '#1a241b', // matches jungle-dark
-        }}
-        aria-hidden="true"
-      />
       <PageHeader
         title={venueName || '...'}
         leftSlot={<HamburgerMenu inHeader />}

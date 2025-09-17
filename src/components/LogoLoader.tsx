@@ -1,12 +1,19 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 interface LogoLoaderProps {
   onWelcome: () => void;
 }
 
 const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
+  const router = useRouter();
   // Check if we're in production
   const isProduction = process.env.NODE_ENV === 'production';
+  
+  const handleWelcome = () => {
+    onWelcome(); // Call the original callback to hide the loader
+    router.push('/menu'); // Navigate to menu
+  };
   
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-transparent">
@@ -48,9 +55,9 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
           </div>
         </div>
       ) : (
-        // Staging/Development - Show Welcome button
+        // Staging/Development - Show Welcome button that navigates to /menu
         <button
-          onClick={onWelcome}
+          onClick={handleWelcome}
           className="mt-4 px-8 py-3 rounded-lg bg-leaf text-white text-xl font-semibold shadow-lg hover:bg-leaf/80 transition-all duration-200 border-2 border-leaf z-10"
         >
           Welcome
