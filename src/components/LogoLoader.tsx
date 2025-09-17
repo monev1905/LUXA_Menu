@@ -7,9 +7,9 @@ interface LogoLoaderProps {
 
 const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
   const router = useRouter();
-  // Check if we're in production
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+  // Check if we're in production AND not staging
+  const isProduction = process.env.NEXT_PUBLIC_ENVIRONMENT !== 'production';
+
   const handleWelcome = () => {
     onWelcome(); // Call the original callback to hide the loader
     router.push('/menu'); // Navigate to menu

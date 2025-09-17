@@ -43,9 +43,6 @@ npm run seed
 # Build the application
 npm run build -- --no-lint
 
-# Set staging environment variable
-export NEXT_PUBLIC_ENVIRONMENT=staging
-
 # Restart PM2 process
 pm2 restart luxa-menu-staging
 
