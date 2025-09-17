@@ -55,6 +55,9 @@ npx prisma migrate deploy
 # echo "🌱 Seeding database..."
 # npm run seed
 
+# Set production environment variable (ensure no staging flag)
+unset NEXT_PUBLIC_ENVIRONMENT
+
 # Restart PM2 application
 echo "🔄 Restarting application..."
 pm2 restart luxa-menu
