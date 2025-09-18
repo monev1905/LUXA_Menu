@@ -6,6 +6,7 @@ import MenuCard from '@/components/MenuCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
+import Footer from '@/components/Footer';
 
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
@@ -266,6 +267,7 @@ function MenuContent() {
           </ul>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
