@@ -187,13 +187,6 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
               )}
             </div>
           ))}
-          <Link
-            href="/reservations"
-            className="block py-2 text-lg text-accent hover:text-leaf"
-            onClick={() => setOpen(false)}
-          >
-            Reservations
-          </Link>
         </nav>
       </aside>
     </>
