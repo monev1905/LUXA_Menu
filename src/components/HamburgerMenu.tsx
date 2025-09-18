@@ -89,18 +89,18 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-gradient-to-br from-[#1a241b]/95 via-[#233524]/90 to-[#2d4a3e]/90"
+          className="fixed inset-0 z-40 bg-black/70"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Side drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full min-w-\[250px\] z-50 transform transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
-        } bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e] shadow-2xl border-r-2 border-forest`}
+        } bg-gradient-to-b from-[#030f0c] via-[#1a241b] to-[#030f0c] shadow-2xl border-r-2 border-[#04100C]`}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b border-brown">
+        <div className="flex items-center justify-between px-6 py-6 border-b border-[#04100C]">
           <span className="text-2xl font-bold text-accent">Menu</span>
           <button
             className="text-leaf hover:text-accent focus:outline-none"
@@ -187,6 +187,13 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
               )}
             </div>
           ))}
+          <Link
+            href="/reservations"
+            className="block py-2 text-lg text-accent hover:text-leaf"
+            onClick={() => setOpen(false)}
+          >
+            Reservations
+          </Link>
         </nav>
       </aside>
     </>
