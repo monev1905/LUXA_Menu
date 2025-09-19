@@ -9,6 +9,7 @@ import MenuCard from '@/components/MenuCard';
 interface Venue {
   id: string;
   name: string;
+  subtitle?: string;
   address: string;
   phone: string;
   mapUrl: string;
@@ -65,7 +66,7 @@ export default function LocationsPage() {
       
       <PageHeader
         title={venueName ? `${venueName}` : 'Locations'}
-        subtitle="Locations"
+        subtitle={venues.length > 0 && venues[0].subtitle ? venues[0].subtitle : 'Locations'}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={
           <button

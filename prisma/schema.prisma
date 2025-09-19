@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,30 +8,31 @@ datasource db {
 }
 
 model Drink {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   price       Float
-  category    String   // 'drinks'
-  type        String   // 'lemonades', 'alcohol', etc.
-  isActive    Boolean  @default(true)
+  isActive    Boolean @default(true)
+  category    String
+  type        String
 }
 
 model ShishaFlavor {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   price       Float
-  category    String   // 'shisha'
-  type        String   // 'blond', 'black'
   brand       String
-  isActive    Boolean  @default(true)
+  type        String
+  isActive    Boolean @default(true)
+  category    String
 }
 
 model Venue {
-  id      String @id @default(uuid())
-  name    String
-  address String
-  phone   String
-  mapUrl  String
+  id       String  @id @default(uuid())
+  name     String
+  address  String
+  phone    String
+  mapUrl   String
+  subtitle String?
 }
