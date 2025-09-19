@@ -71,7 +71,7 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
     <>
       {/* Hamburger button */}
       <button
-        className={`${inHeader ? '' : 'fixed top-2 left-2 z-50'} p-2 rounded-md bg-jungle-dark text-accent shadow-md focus:outline-none focus:ring-2 focus:ring-accent`}
+        className="fixed top-2 left-2 z-50 p-2 rounded-md bg-jungle-dark text-accent shadow-md focus:outline-none focus:ring-2 focus:ring-accent"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
       >
