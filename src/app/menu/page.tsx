@@ -44,6 +44,7 @@ function MenuContent() {
   const [openTypes, setOpenTypes] = useState<string[]>([]);
   const [openBrands, setOpenBrands] = useState<string[]>([]);
   const [venueName, setVenueName] = useState('');
+  const [venueSubtitle, setVenueSubtitle] = useState('');
   const headerRef = useRef<HTMLDivElement>(null);
   const tocRef = useRef<HTMLDivElement>(null);
   const [dynamicPadding, setDynamicPadding] = useState(0);
@@ -53,7 +54,10 @@ function MenuContent() {
     fetch('/api/venues')
       .then(res => res.json())
       .then(data => {
-        if (data && data.length > 0) setVenueName(data[0].name);
+        if (data && data.length > 0) {
+          setVenueName(data[0].name);
+          setVenueSubtitle(data[0].subtitle || 'Menu');
+        }
       });
   }, []);
 
@@ -127,7 +131,7 @@ function MenuContent() {
       </div>
       <PageHeader
         title={venueName ? `${venueName}` : '...'}
-        subtitle="Menu"
+        subtitle={venueSubtitle || 'Menu'}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={showBackButton && (
           <button
