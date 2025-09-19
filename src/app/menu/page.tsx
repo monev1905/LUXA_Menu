@@ -234,8 +234,8 @@ function MenuContent() {
                       <ul className="mt-2 space-y-2 w-full">
                         {brandItems.map(item => (
                           <li key={item.id} className={`w-[90%] mx-auto p-3 rounded-lg flex justify-between items-center border-2 border-gray-600 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
-                            <span className="text-accent font-normal" style={{ fontFamily: 'monospace', fontWeight: 400 }}>{item.name}</span>
-                            <span className="text-leaf font-semibold" style={{ fontFamily: 'monospace', fontWeight: 400 }}>${item.price.toFixed(2)}</span>
+                            <span className="text-accent font-roboto">{item.name}</span>
+                            <span className="text-leaf font-roboto">${item.price.toFixed(2)}</span>
                           </li>
                         ))}
                       </ul>
@@ -257,10 +257,10 @@ function MenuContent() {
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-lg text-leaf font-bold">{item.name}</span>
-                  <span className="text-leaf font-semibold text-base">${item.price.toFixed(2)}</span>
+                  <span className="text-leaf font-semibold text-base font-roboto">${item.price.toFixed(2)}</span>
                 </div>
                 {item.description && (
-                  <div className="text-accent text-sm mb-1" style={{ fontFamily: 'monospace', fontWeight: 400 }}>{item.description}</div>
+                  <div className="text-accent text-sm mb-1 font-roboto">{item.description}</div>
                 )}
               </li>
             ))}

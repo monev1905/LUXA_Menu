@@ -8,6 +8,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'roboto': ['Roboto', 'sans-serif'],
+        'card': ['CardFont', 'sans-serif'],
+      },
       colors: {
         jungle: "#233524",         // main background
         'jungle-dark': "#1a241b",  // header, overlays
