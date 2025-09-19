@@ -120,7 +120,7 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
         </div>
         <nav className="px-6 py-4 space-y-2">
           <Link
-            href="/"
+            href="/menu"
             className="block py-2 text-lg text-accent hover:text-leaf"
             onClick={() => setOpen(false)}
           >
