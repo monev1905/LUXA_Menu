@@ -126,7 +126,8 @@ function MenuContent() {
         <div className="absolute w-[150%] h-[60%] left-[-25%] top-[40%] opacity-10 rotate-12 animate-shine" style={{background: 'linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0) 100%)'}} />
       </div>
       <PageHeader
-        title={venueName ? `${venueName} Menu` : '...'}
+        title={venueName ? `${venueName}` : '...'}
+        subtitle="Menu"
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={showBackButton && (
           <button

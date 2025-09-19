@@ -11,6 +11,7 @@ module.exports = {
       fontFamily: {
         'roboto': ['Roboto', 'sans-serif'],
         'card': ['CardFont', 'sans-serif'],
+        'lastic': ['Lastic', 'sans-serif'],
       },
       colors: {
         jungle: "#233524",         // main background

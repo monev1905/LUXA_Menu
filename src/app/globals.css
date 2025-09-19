@@ -80,3 +80,14 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+@font-face {
+  font-family: 'Lastic';
+  src: url('/fonts/Lastica.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-lastic {
+  font-family: 'Lastic', sans-serif;
+}

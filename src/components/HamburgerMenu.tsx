@@ -124,8 +124,9 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
             className="block py-2 text-lg text-accent hover:text-leaf"
             onClick={() => setOpen(false)}
           >
-            Home
+            Menu
           </Link>
+          
           {menu.map(cat => (
             <div key={cat.key}>
               {cat.key === 'shisha' ? (
@@ -187,6 +188,14 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
               )}
             </div>
           ))}
+
+          <Link
+            href="/reservations"
+            className="block py-2 text-lg text-accent hover:text-leaf"
+            onClick={() => setOpen(false)}
+          >
+            Reservations
+          </Link>
         </nav>
       </aside>
     </>

@@ -2,6 +2,7 @@ import React from "react";
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;
   children?: React.ReactNode;
   className?: string;
   leftSlot?: React.ReactNode;
@@ -10,6 +11,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({
   title,
+  subtitle,
   children,
   className = "",
   leftSlot,
@@ -63,15 +65,17 @@ export default function PageHeader({
         </div>
       </div>
       
-      {/* Venue name overlay on background image */}
+      {/* Dynamic title overlay on background image */}
       <div className="absolute inset-0 flex items-center justify-center -z-5">
         <div className="text-center">
           <h2 className="text-4xl md:text-6xl font-bold text-white/90 tracking-wider drop-shadow-2xl" style={{ fontFamily: 'CardFont, sans-serif', textShadow: '0 0 20px rgba(0,0,0,0.8)' }}>
-            Noir
+            {title}
           </h2>
-          <h3 className="text-2xl md:text-4xl font-semibold text-white/80 tracking-wide drop-shadow-xl" style={{ fontFamily: 'CardFont, sans-serif', textShadow: '0 0 15px rgba(0,0,0,0.8)' }}>
-            Hookah Lounge
-          </h3>
+          {subtitle && (
+            <h3 className="text-2xl md:text-4xl font-semibold text-white/80 tracking-wide drop-shadow-xl mt-2" style={{ fontFamily: 'CardFont, sans-serif', textShadow: '0 0 15px rgba(0,0,0,0.8)' }}>
+              {subtitle}
+            </h3>
+          )}
         </div>
       </div>
       {children && (
