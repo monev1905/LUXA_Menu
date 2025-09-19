@@ -31,7 +31,7 @@ export default function MenuCard({
           {name}
         </span>
         {description && (
-          <div className="text-leaf text-base mt-2 text-center max-w-xs">{description}</div>
+          <div className="text-leaf text-base mt-2 text-center max-w-xs whitespace-pre-line">{description}</div>
         )}
         {typeof price === 'number' && price > 0 && (
           <span className="text-lg font-semibold text-leaf mt-2">${price.toFixed(2)}</span>
