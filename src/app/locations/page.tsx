@@ -66,7 +66,7 @@ export default function LocationsPage() {
       
       <PageHeader
         title={venueName ? `${venueName}` : 'Locations'}
-        subtitle={venues.length > 0 && venues[0].subtitle ? venues[0].subtitle : 'Locations'}
+        subtitle={venues.length > 0 && venues[0].subtitle ? venues[0].subtitle : ''}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={
           <button

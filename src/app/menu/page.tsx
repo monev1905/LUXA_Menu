@@ -41,7 +41,6 @@ function MenuContent() {
   const sectionParam = searchParams.get('section');
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openTypes, setOpenTypes] = useState<string[]>([]);
   const [openBrands, setOpenBrands] = useState<string[]>([]);
   const [venueName, setVenueName] = useState('');
   const [venueSubtitle, setVenueSubtitle] = useState('');
@@ -56,7 +55,7 @@ function MenuContent() {
       .then(data => {
         if (data && data.length > 0) {
           setVenueName(data[0].name);
-          setVenueSubtitle(data[0].subtitle || 'Menu');
+          setVenueSubtitle(data[0].subtitle || '');
         }
       });
   }, []);
@@ -130,8 +129,8 @@ function MenuContent() {
         <div className="absolute w-[150%] h-[60%] left-[-25%] top-[40%] opacity-10 rotate-12 animate-shine" style={{background: 'linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0) 100%)'}} />
       </div>
       <PageHeader
-        title={venueName ? `${venueName}` : '...'}
-        subtitle={venueSubtitle || 'Menu'}
+        title={venueName ? `${venueName}` : ''}
+        subtitle={venueSubtitle || ''}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={showBackButton && (
           <button
