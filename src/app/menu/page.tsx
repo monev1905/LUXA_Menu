@@ -185,6 +185,14 @@ function MenuContent() {
               onClick={() => setShishaType('dark')}
               fontSize="text-xl"
             />
+             <MenuCard
+              name="Cigarete Leaf"
+              description=""
+              price={0}
+              isActive={true}
+              onClick={() => setShishaType('dark')}
+              fontSize="text-xl"
+            />
           </div>
         ) : tabParam === 'drink' && !sectionParam ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start">

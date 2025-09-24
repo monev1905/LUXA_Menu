@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface LogoLoaderProps {
@@ -7,8 +7,13 @@ interface LogoLoaderProps {
 
 const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
   const router = useRouter();
-  // Check if we're in production AND not staging
-  const isProduction = process.env.NEXT_PUBLIC_ENVIRONMENT === 'production';
+  const [isProduction, setIsProduction] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    setIsProduction(process.env.NEXT_PUBLIC_ENVIRONMENT === 'production');
+  }, []);
 
   const handleWelcome = () => {
     onWelcome(); // Call the original callback to hide the loader
@@ -41,7 +46,14 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
         />
       </div>
       
-      {isProduction ? (
+      {!isClient ? (
+        // Show loading state during hydration
+        <div className="text-center z-10">
+          <div className="text-2xl font-bold text-white mb-4">
+            Loading...
+          </div>
+        </div>
+      ) : isProduction ? (
         // Production - Show Coming Soon message
         <div className="text-center z-10">
           <div className="text-2xl font-bold text-white mb-4">

@@ -7,32 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ShishaType {
+  blond
+  dark
+  cigar
+}
+
+enum BrandType {
+  DarkSide
+  MustHave
+  BlackBourn
+  Bonche
+  Hooligan
+  Jent
+  Kraken
+  SaphireCrown
+  Sarma
+  Trofimoffs
+}
+
+model ShishaFlavor {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  brand       BrandType
+  type        ShishaType
+  isActive    Boolean    @default(true)
+  category    String?
+  imageUrl    String?
+}
+
 model Drink {
   id          String  @id @default(uuid())
   name        String
   description String?
   price       Float
   isActive    Boolean @default(true)
-  category    String
-  type        String
-}
-
-model ShishaFlavor {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  brand       String
-  type        String
-  isActive    Boolean @default(true)
-  category    String
+  category    String?
+  type        String?
+  imageUrl    String?
 }
 
 model Venue {
   id       String  @id @default(uuid())
   name     String
-  address  String
-  phone    String
-  mapUrl   String
+  address  String?
+  phone    String?
+  mapUrl   String?
   subtitle String?
 }
