@@ -21,28 +21,30 @@ model Drinks {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ShishaBrands {
-  Brand            String            @id @unique(map: "ShishaSelections_Brand_key")
-  Selection        String?
+  id               BigInt            @id(map: "ShishaBrands2_pkey") @default(autoincrement())
+  Brand            String?
+  Selection_id     BigInt?
   Type             ShishaType?
-  ShishaSelections ShishaSelections? @relation(fields: [Selection], references: [Selection], onDelete: NoAction, onUpdate: NoAction)
+  ShishaSelections ShishaSelections? @relation(fields: [Selection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ShishaFlavors    ShishaFlavors[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ShishaFlavors {
-  id           String        @id(map: "ShishaFlavor_pkey")
+  id           BigInt       @id(map: "ShishaFlavors_pkey1") @default(autoincrement())
   name         String
   description  String?
-  isActive     Boolean       @default(true)
-  imageUrl     String?
-  brand        String?
-  ShishaBrands ShishaBrands? @relation(fields: [brand], references: [Brand], onUpdate: NoAction)
+  isActive     Boolean      @default(true)
+  imageUrl     String
+  brand_id     BigInt
+  ShishaBrands ShishaBrands @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ShishaFlavors_brand_id_fkey1")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ShishaSelections {
-  Selection    String         @id
-  Price        Float?
+  id           BigInt         @id(map: "ShishaSelections2_pkey") @default(autoincrement())
+  Selection    String?
+  Price        Decimal?       @db.Decimal
   ShishaBrands ShishaBrands[]
 }
 
