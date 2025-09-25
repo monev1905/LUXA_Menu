@@ -1,37 +1,14 @@
 "use client";
 
-import { Suspense, useEffect, useState, useRef } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import MenuCard from '@/components/MenuCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
 import Footer from '@/components/Footer';
-import ShishaBrandDropdown from '@/components/ShishaBrandDropdown';
-
-const SHISHA_TYPES = [
-  { key: 'blond', label: 'Blond' },
-  { key: 'dark', label: 'Dark' },
-];
-
-const DRINK_TYPES = [
-  { key: 'lemonades', label: 'Lemonades & Iced Tea', emoji: '🍋' },
-  { key: 'alcohol', label: 'Alcohol', emoji: '🥃' },
-  { key: 'smoothies', label: 'Smoothies & Milkshakes', emoji: '🥤' },
-  { key: 'softdrinks', label: 'Soft Drinks', emoji: '🥤' },
-  { key: 'nuts', label: 'Nuts', emoji: '🥜' },
-  { key: 'hotdrinks', label: 'Hot Drinks', emoji: '☕' },
-];
-
-interface MenuItem {
-  id: string;
-  name: string;
-  price?: number;
-  isActive: boolean;
-  type?: string;
-  brand?: string;
-  imageUrl?: string;
-}
+import DrinksMenu from '@/components/DrinksMenu';
+import ShishaMenu from '@/components/ShishaMenu';
 
 function MenuContent() {
   const searchParams = useSearchParams();
@@ -39,14 +16,9 @@ function MenuContent() {
   const tabParam = searchParams.get('tab');
   const typeParam = searchParams.get('type');
   const sectionParam = searchParams.get('section');
-  const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openBrands, setOpenBrands] = useState<string[]>([]);
   const [venueName, setVenueName] = useState('');
   const [venueSubtitle, setVenueSubtitle] = useState('');
-  const headerRef = useRef<HTMLDivElement>(null);
-  const tocRef = useRef<HTMLDivElement>(null);
-  const [dynamicPadding, setDynamicPadding] = useState(0);
   const [shishaType, setShishaType] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,42 +29,9 @@ function MenuContent() {
           setVenueName(data[0].name);
           setVenueSubtitle(data[0].subtitle || '');
         }
+        setLoading(false);
       });
   }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    if (tabParam === 'shisha') {
-      fetch('/api/shisha-flavors')
-        .then(res => res.json())
-        .then(data => {
-          setItems(data);
-          setLoading(false);
-        });
-    } else {
-      fetch('/api/drinks')
-        .then(res => res.json())
-        .then(data => {
-          setItems(data);
-          setLoading(false);
-        });
-    }
-  }, [tabParam]);
-
-  useEffect(() => {
-    if (tabParam === 'shisha' && headerRef.current && tocRef.current) {
-      setDynamicPadding(headerRef.current.offsetHeight + tocRef.current.offsetHeight + 16); // 16px extra spacing
-    } else {
-      setDynamicPadding(0);
-    }
-  }, [tabParam, venueName, items]);
-
-  // Filter by type if present (for shisha) or section (for drinks)
-  const filteredItems = (tabParam === 'shisha' && (typeParam || shishaType))
-    ? items.filter(item => item.type === (typeParam || shishaType))
-    : (tabParam === 'drink' && sectionParam)
-      ? items.filter(item => item.type === sectionParam)
-      : items;
 
   // Show back button whenever in shisha or drinks menu
   const showBackButton = tabParam === 'shisha' || tabParam === 'drink';
@@ -128,6 +67,7 @@ function MenuContent() {
       <div className="fixed inset-0 w-full h-full -z-10 pointer-events-none" style={{overflow: 'hidden'}}>
         <div className="absolute w-[150%] h-[60%] left-[-25%] top-[40%] opacity-10 rotate-12 animate-shine" style={{background: 'linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0) 100%)'}} />
       </div>
+      
       <PageHeader
         title={venueName ? `${venueName}` : ''}
         subtitle={venueSubtitle || ''}
@@ -144,6 +84,7 @@ function MenuContent() {
           </button>
         )}
       />
+      
       <main className="w-full min-h-[60vh] flex flex-col items-center p-8 bg-transparent">
         {loading ? (
           <LoadingSpinner />
@@ -167,92 +108,17 @@ function MenuContent() {
               />
             </div>
           </div>
-        ) : tabParam === 'shisha' && !typeParam && !shishaType ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start bg-transparent">
-            <MenuCard
-              name="Blond Leaf"
-              description=""
-              price={0}
-              isActive={true}
-              onClick={() => setShishaType('blond')}
-              fontSize="text-xl"
-            />
-            <MenuCard
-              name="Dark Leaf"
-              description=""
-              price={0}
-              isActive={true}
-              onClick={() => setShishaType('dark')}
-              fontSize="text-xl"
-            />
-             <MenuCard
-              name="Cigarete Leaf"
-              description=""
-              price={0}
-              isActive={true}
-              onClick={() => setShishaType('dark')}
-              fontSize="text-xl"
-            />
-          </div>
-        ) : tabParam === 'drink' && !sectionParam ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start">
-            {DRINK_TYPES.map(type => (
-              <MenuCard
-                key={type.key}
-                name={type.label}
-                description={undefined}
-                price={0}
-                isActive={true}
-                onClick={() => router.replace(`/menu?tab=drink&section=${type.key}`)}
-                fontSize="text-xl"
-              />
-            ))}
-          </div>
+        ) : tabParam === 'drink' ? (
+          <DrinksMenu sectionParam={sectionParam} />
         ) : tabParam === 'shisha' ? (
-          <>
-            {SHISHA_TYPES.map(type => {
-              // Only show brands for the selected type (shishaType or typeParam)
-              const activeType = typeParam || shishaType;
-              if (activeType && activeType !== type.key) return null;
-              const brands = Array.from(new Set(
-                items.filter(item => item.type === type.key && typeof item.brand === 'string' && item.brand.trim() !== '')
-                  .map(item => item.brand as string)
-              ));
-              return brands.map(brand => {
-                const brandItems = items.filter(item => item.type === type.key && item.brand === brand);
-                return (
-                  <ShishaBrandDropdown
-                    key={brand}
-                    brand={brand}
-                    items={brandItems}
-                    isOpen={openBrands.includes(brand)}
-                    onToggle={() => setOpenBrands(openBrands.includes(brand)
-                      ? openBrands.filter(b => b !== brand)
-                      : [brand])}
-                  />
-                );
-              });
-            })}
-          </>
-        ) : filteredItems.length === 0 ? (
-          <div className="text-center text-gray-500 py-10">No items found.</div>
-        ) : (
-          <ul className="space-y-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
-            {filteredItems.map(item => (
-              <li
-                key={item.id}
-                className={`w-[90%] mx-auto p-4 rounded-xl flex flex-col border-2 border-gray-600 shadow-md transition-all duration-200 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
-                style={{ fontFamily: 'CardFont, sans-serif', fontWeight: 500, letterSpacing: '0.01em' }}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-lg text-leaf font-bold">{item.name}</span>
-                  <span className="text-leaf font-semibold text-base font-roboto">${item.price?.toFixed(2) || '0.00'}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+          <ShishaMenu 
+            typeParam={typeParam} 
+            shishaType={shishaType} 
+            onShishaTypeChange={setShishaType} 
+          />
+        ) : null}
       </main>
+      
       <Footer />
     </div>
   );
