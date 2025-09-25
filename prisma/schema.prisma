@@ -25,6 +25,7 @@ model ShishaBrands {
   Brand            String?
   Selection_id     BigInt?
   Type             ShishaType?
+  logoUrl          String?
   ShishaSelections ShishaSelections? @relation(fields: [Selection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ShishaFlavors    ShishaFlavors[]
 }

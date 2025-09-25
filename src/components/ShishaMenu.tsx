@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import ShishaTypes from '@/components/ShishaTypes';
-import ShishaBrandDropdown from '@/components/ShishaBrandDropdown';
+import ShishaSelectionDropdown from '@/components/ShishaSelectionDropdown';
 
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
   { key: 'dark', label: 'Dark' },
+  { key: 'cigar', label: 'Cigar' },
 ];
 
 interface MenuItem {
@@ -25,17 +26,20 @@ interface ShishaMenuProps {
 
 export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }: ShishaMenuProps) {
   const [items, setItems] = useState<MenuItem[]>([]);
+  const [selections, setSelections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openBrands, setOpenBrands] = useState<string[]>([]);
+  const [openSelections, setOpenSelections] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/shisha-flavors')
-      .then(res => res.json())
-      .then(data => {
-        setItems(data);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch('/api/shisha-flavors').then(res => res.json()),
+      fetch('/api/shisha-selections').then(res => res.json())
+    ]).then(([flavorsData, selectionsData]) => {
+      setItems(flavorsData);
+      setSelections(selectionsData);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
@@ -47,54 +51,59 @@ export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }
     return <ShishaTypes onTypeSelect={onShishaTypeChange} />;
   }
 
-  // Show brands for the selected type
+  // Show selections for the selected type
   const activeType = typeParam || shishaType;
   
   return (
     <>
       {SHISHA_TYPES.map(type => {
-        // Only show brands for the selected type
+        // Only show selections for the selected type
         if (activeType && activeType !== type.key) return null;
         
-        const brands = Array.from(new Set(
-          items.filter(item => item.type === type.key && typeof item.brand === 'string' && item.brand.trim() !== '')
-            .map(item => item.brand as string)
-        ));
-        
-        return brands.map(brand => {
-          const brandItems = items.filter(item => item.type === type.key && item.brand === brand);
+        // For dark leaf, show only Finest and Classic selections
+        if (activeType === 'dark') {
+          const darkSelections = selections.filter(selection => {
+            const cleanSelection = selection.selection?.trim();
+            return cleanSelection === 'Finest' || cleanSelection === 'Classic';
+          });
           
-          // Different behavior based on active type
-          if (activeType === 'dark') {
-            // Current behavior for dark shisha
+          return darkSelections.map((selection, index) => {
+            // Get brands for this selection that are dark type
+            const selectionBrands = selection.brands
+              .filter((brand: any) => brand.type === 'dark')
+              .map((brand: any, brandIndex: number) => ({
+                ...brand,
+                id: brand.id || `brand-${index}-${brandIndex}`, // Ensure unique ID
+              }));
+            
             return (
-              <ShishaBrandDropdown
-                key={brand}
-                brand={brand}
-                items={brandItems}
-                isOpen={openBrands.includes(brand)}
-                onToggle={() => setOpenBrands(openBrands.includes(brand)
-                  ? openBrands.filter(b => b !== brand)
-                  : [brand])}
+              <ShishaSelectionDropdown
+                key={`selection-${selection.id || index}`}
+                selection={selection.selection?.trim() || ''}
+                brands={selectionBrands}
+                isOpen={openSelections.includes(selection.selection)}
+                onToggle={() => setOpenSelections(openSelections.includes(selection.selection)
+                  ? openSelections.filter(s => s !== selection.selection)
+                  : [selection.selection])}
               />
             );
-          } else {
-            // New UI for blond and cigar
-            return (
-              <div key={brand} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
-                <div className="w-full text-left px-4 py-3 rounded-lg border-2 border-gray-600 text-xl font-semibold text-accent bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e]">
-                  {brand} - New UI
-                </div>
-                <div className="mt-2 p-4 bg-gray-800 rounded-lg">
-                  <p className="text-accent text-center">New UI for {activeType} shisha</p>
-                  <p className="text-leaf text-sm text-center mt-2">
-                    {brandItems.length} items available
-                  </p>
-                </div>
+          });
+        } else {
+          // For blond and cigar, show placeholder UI
+          return (
+            <div key={type.key} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
+              <div className="w-full text-left px-4 py-3 rounded-lg border-2 border-gray-600 text-xl font-semibold text-accent bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e]">
+                {type.label} Leaf - New UI
               </div>
-            );
-          }
-        });
+              <div className="mt-2 p-4 bg-gray-800 rounded-lg">
+                <p className="text-accent text-center">New UI for {type.label.toLowerCase()} shisha</p>
+                <p className="text-leaf text-sm text-center mt-2">
+                  Coming soon...
+                </p>
+              </div>
+            </div>
+          );
+        }
       })}
     </>
   );
