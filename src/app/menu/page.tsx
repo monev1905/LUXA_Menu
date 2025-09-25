@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
 import Footer from '@/components/Footer';
+import ShishaBrandDropdown from '@/components/ShishaBrandDropdown';
 
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
@@ -31,6 +32,7 @@ interface MenuItem {
   isActive: boolean;
   type?: string;
   brand?: string;
+  imageUrl?: string;
 }
 
 function MenuContent() {
@@ -221,38 +223,15 @@ function MenuContent() {
               return brands.map(brand => {
                 const brandItems = items.filter(item => item.type === type.key && item.brand === brand);
                 return (
-                  <div key={brand} id={`shisha-${type.key}-${brand.replace(/\s+/g, '-')}`} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
-                    <button
-                      className={`w-full text-left px-4 py-3 rounded-lg border-2 ${openBrands.includes(brand) ? 'border-accent' : 'border-gray-600'} text-xl font-semibold text-accent flex justify-between items-center focus:outline-none transition-all duration-200 hover:border-leaf`}
-                      style={{ fontFamily: 'CardFont, sans-serif' }}
-                      onClick={() => setOpenBrands(openBrands.includes(brand)
-                        ? openBrands.filter(b => b !== brand)
-                        : [brand])}
-                    >
-                      {brand} 
-                      <span className="ml-2 transition-transform duration-200">
-                        {openBrands.includes(brand) ? (
-                          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                          </svg>
-                        ) : (
-                          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        )}
-                      </span>
-                    </button>
-                    {openBrands.includes(brand) && (
-                      <ul className="mt-2 space-y-2 w-full">
-                        {brandItems.map(item => (
-                          <li key={item.id} className={`w-[90%] mx-auto p-3 rounded-lg flex justify-between items-center border-2 border-gray-600 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
-                            <span className="text-accent font-roboto">{item.name}</span>
-                            <span className="text-leaf font-roboto">${item.price.toFixed(2)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
+                  <ShishaBrandDropdown
+                    key={brand}
+                    brand={brand}
+                    items={brandItems}
+                    isOpen={openBrands.includes(brand)}
+                    onToggle={() => setOpenBrands(openBrands.includes(brand)
+                      ? openBrands.filter(b => b !== brand)
+                      : [brand])}
+                  />
                 );
               });
             })}
@@ -290,4 +269,4 @@ export default function MenuPage() {
       <MenuContent />
     </Suspense>
   );
-} 
+}
