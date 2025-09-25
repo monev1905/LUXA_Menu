@@ -7,39 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ShishaType {
-  blond
-  dark
-  cigar
-}
-
-enum BrandType {
-  DarkSide
-  MustHave
-  BlackBourn
-  Bonche
-  Hooligan
-  Jent
-  Kraken
-  SaphireCrown
-  Sarma
-  Trofimoffs
-}
-
-model ShishaFlavor {
-  id          String     @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  brand       BrandType
-  type        ShishaType
-  isActive    Boolean    @default(true)
-  category    String?
-  imageUrl    String?
-}
-
-model Drink {
-  id          String  @id @default(uuid())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Drinks {
+  id          String  @id(map: "Drink_pkey")
   name        String
   description String?
   price       Float
@@ -49,11 +19,45 @@ model Drink {
   imageUrl    String?
 }
 
-model Venue {
-  id       String  @id @default(uuid())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model ShishaBrands {
+  Brand            String            @id @unique(map: "ShishaSelections_Brand_key")
+  Selection        String?
+  Type             ShishaType?
+  ShishaSelections ShishaSelections? @relation(fields: [Selection], references: [Selection], onDelete: NoAction, onUpdate: NoAction)
+  ShishaFlavors    ShishaFlavors[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model ShishaFlavors {
+  id           String        @id(map: "ShishaFlavor_pkey")
+  name         String
+  description  String?
+  isActive     Boolean       @default(true)
+  imageUrl     String?
+  brand        String?
+  ShishaBrands ShishaBrands? @relation(fields: [brand], references: [Brand], onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model ShishaSelections {
+  Selection    String         @id
+  Price        Float?
+  ShishaBrands ShishaBrands[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Venues {
+  id       String  @id(map: "Venue_pkey")
   name     String
   address  String?
   phone    String?
   mapUrl   String?
   subtitle String?
+}
+
+enum ShishaType {
+  blond
+  dark
+  cigar
 }
