@@ -26,9 +26,7 @@ const DRINK_TYPES = [
 interface MenuItem {
   id: string;
   name: string;
-  description: string;
-  price: number;
-  category: string;
+  price?: number;
   isActive: boolean;
   type?: string;
   brand?: string;
@@ -248,11 +246,8 @@ function MenuContent() {
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-lg text-leaf font-bold">{item.name}</span>
-                  <span className="text-leaf font-semibold text-base font-roboto">${item.price.toFixed(2)}</span>
+                  <span className="text-leaf font-semibold text-base font-roboto">${item.price?.toFixed(2) || '0.00'}</span>
                 </div>
-                {item.description && (
-                  <div className="text-accent text-sm mb-1 font-roboto">{item.description}</div>
-                )}
               </li>
             ))}
           </ul>
