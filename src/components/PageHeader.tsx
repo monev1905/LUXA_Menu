@@ -17,6 +17,10 @@ export default function PageHeader({
   leftSlot,
   rightSlot,
 }: PageHeaderProps) {
+
+  console.log(title, "title");
+  console.log(subtitle, "subtitle");
+  
   return (
     <header
       className={`sticky top-0 z-40 w-full shadow-md py-2 h-14 ${className} bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e]`}

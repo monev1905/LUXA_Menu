@@ -102,7 +102,7 @@ function FlavorsContent() {
       </div>
 
       <PageHeader
-        title={brandName ? `${brandName} Flavors` : 'Flavors'}
+        title={brandName}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={
           <button
