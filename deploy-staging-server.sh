@@ -37,8 +37,8 @@ echo "��️ Running database migrations..."
 npx prisma migrate deploy
 
 # Seed the database
-echo "🌱 Seeding database..."
-npm run seed
+# echo "🌱 Seeding database..."
+# npm run seed
 
 # Build the application
 npm run build -- --no-lint
