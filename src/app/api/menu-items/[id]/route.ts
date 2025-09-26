@@ -7,7 +7,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    await prisma.drink.delete({ where: { id } });
+    await prisma.drinks.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Item not found' }, { status: 404 });
@@ -21,7 +21,7 @@ export async function PATCH(
   const { id } = await params;
   try {
     const data = await req.json();
-    const updated = await prisma.drink.update({
+    const updated = await prisma.drinks.update({
       where: { id },
       data,
     });
@@ -31,4 +31,3 @@ export async function PATCH(
     return NextResponse.json({ error: 'Item not found or update failed' }, { status: 400 });
   }
 }
- 
