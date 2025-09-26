@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ShishaTypes from '@/components/ShishaTypes';
 import ShishaSelectionDropdown from '@/components/ShishaSelectionDropdown';
+import LeafMenu from '@/components/LeafMenu';
 
 const SHISHA_TYPES = [
   { key: 'blond', label: 'Blond' },
@@ -60,7 +61,7 @@ export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }
         // Only show selections for the selected type
         if (activeType && activeType !== type.key) return null;
         
-        // For dark leaf, show only Finest and Classic selections
+        // For dark leaf, show selections with brands
         if (activeType === 'dark') {
           const darkSelections = selections.filter(selection => {
             const cleanSelection = selection.selection?.trim();
@@ -88,8 +89,13 @@ export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }
               />
             );
           });
-        } else {
-          // For blond and cigar, show placeholder UI
+        } 
+        // For cigar leaf, show the new brand/flavor interface
+        else if (activeType === 'cigar') {
+          return <LeafMenu key="cigar" leafType="cigar" selectionId="3" />;
+        }
+        // For blond leaf, show placeholder UI
+        else if (activeType === 'blond') {
           return (
             <div key={type.key} className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
               <div className="w-full text-left px-4 py-3 rounded-lg border-2 border-gray-600 text-xl font-semibold text-accent bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e]">

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ShishaSelectionDropdownProps {
   selection: string;
@@ -19,42 +19,40 @@ export default function ShishaSelectionDropdown({
   isOpen, 
   onToggle 
 }: ShishaSelectionDropdownProps) {
-  const [uploading, setUploading] = useState(false);
+  const router = useRouter();
+  const [brandsWithFlavors, setBrandsWithFlavors] = useState<any[]>([]);
 
-  const uploadImage = async (file: File, brandId: string) => {
-    try {
-      setUploading(true);
-      
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${brandId}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('shisha-flavors')
-        .upload(`brands/${fileName}`, file);
-
-      if (error) throw error;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('shisha-flavors')
-        .getPublicUrl(`brands/${fileName}`);
-
-      // Update database with logo URL
-      const response = await fetch(`/api/shisha-brands/${brandId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logoUrl: publicUrl })
+  useEffect(() => {
+    // Fetch flavors data to filter brands
+    fetch('/api/shisha-flavors')
+      .then(res => res.json())
+      .then(flavorsData => {
+        // Filter brands that have flavors
+        const filteredBrands = brands.filter((brand: any) => {
+          const hasFlavors = flavorsData.some((flavor: any) => 
+            flavor.brand === brand.brand && flavor.type === brand.type
+          );
+          return hasFlavors;
+        });
+        
+        setBrandsWithFlavors(filteredBrands);
+      })
+      .catch(error => {
+        console.error('Error fetching flavors:', error);
+        setBrandsWithFlavors(brands); // Fallback to original brands
       });
+  }, [brands]);
 
-      if (!response.ok) throw new Error('Failed to update logo URL');
-
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    } finally {
-      setUploading(false);
-    }
+  const handleBrandClick = (brand: any) => {
+    // Navigate to flavors page for the selected brand
+    const brandIdentifier = encodeURIComponent(brand.brand);
+    router.push(`/flavors/${brandIdentifier}`);
   };
+
+  // Don't show dropdown if no brands have flavors
+  if (brandsWithFlavors.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
@@ -79,10 +77,10 @@ export default function ShishaSelectionDropdown({
       
       {isOpen && (
         <ul className="mt-2 space-y-2 w-full">
-          {brands.map((brand, index) => (
+          {brandsWithFlavors.map((brand, index) => (
             <li 
               key={brand.id || `brand-${index}`} 
-              className="relative w-[90%] mx-auto rounded-lg border-2 border-gray-600 overflow-hidden"
+              className="relative w-[90%] mx-auto rounded-lg border-2 border-gray-600 overflow-hidden cursor-pointer hover:border-accent transition-all duration-200"
               style={{
                 backgroundImage: brand.logoUrl ? `url(${brand.logoUrl})` : 'none',
                 backgroundSize: 'cover',
@@ -90,22 +88,8 @@ export default function ShishaSelectionDropdown({
                 backgroundRepeat: 'no-repeat',
                 minHeight: '120px'
               }}
+              onClick={() => handleBrandClick(brand)}
             >
-              {/* Upload button - positioned in top right */}
-              <div className="absolute top-2 right-2 z-20">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) uploadImage(file, brand.id);
-                  }}
-                  className="hidden"
-                  id={`upload-${brand.id || index}`}
-                  disabled={uploading}
-                />
-              </div>
-
               {/* Brand name - positioned at bottom */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                 <div className="text-right">
@@ -117,7 +101,6 @@ export default function ShishaSelectionDropdown({
               {!brand.logoUrl && (
                 <div className="flex items-center justify-center h-32 bg-gradient-to-b from-[#233524] via-[#1a241b] to-[#2d4a3e]">
                   <div className="text-center">
-                    <div className="text-4xl mb-2">🏷️</div>
                     <div className="text-accent font-roboto text-sm">{brand.brand}</div>
                   </div>
                 </div>
