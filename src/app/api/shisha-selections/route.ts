@@ -7,6 +7,7 @@ export async function GET() {
       include: {
         ShishaBrands: {
           select: {
+            id: true,
             Brand: true,
             Type: true,
             logoUrl: true
