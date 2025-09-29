@@ -6,7 +6,7 @@ import Link from 'next/link';
 interface MenuCategory {
   label: string;
   key: string;
-  types?: { label: string; key: string }[];
+  types?: { label: string; key: string; brands?: { label: string; key: string }[] }[];
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -23,6 +23,7 @@ const TYPE_LABELS: Record<string, string> = {
   hotdrinks: "Hot Drinks",
   blond: "Blond",
   dark: "Dark",
+  cigar: "Cigar",
 };
 
 interface HamburgerMenuProps {
@@ -36,33 +37,94 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
 
   useEffect(() => {
     async function fetchMenu() {
-      // Fetch drinks
-      const drinksRes = await fetch("/api/drinks");
-      const drinks = await drinksRes.json();
-      // Fetch shisha flavors
-      const shishaRes = await fetch("/api/shisha-flavors");
-      const shisha = await shishaRes.json();
+      try {
+        // Fetch drinks
+        const drinksRes = await fetch("/api/drinks");
+        const drinks = await drinksRes.json();
+        
+        // Fetch shisha flavors
+        const shishaRes = await fetch("/api/shisha-flavors");
+        const shisha = await shishaRes.json();
+        
+        // Fetch shisha selections to get brands
+        const selectionsRes = await fetch("/api/shisha-selections");
+        const selections = await selectionsRes.json();
 
-      // Group by category
-      const all = [...drinks, ...shisha];
-      const categories = Array.from(
-        new Set(all.map((item: any) => item.category).filter(Boolean))
-      ) as string[];
-      const menuData: MenuCategory[] = categories.map((category) => {
-        const items = all.filter((item: any) => item.category === category);
-        const types = Array.from(
-          new Set(items.map((item: any) => item.type).filter(Boolean))
-        ) as string[];
-        return {
-          key: category,
-          label: CATEGORY_LABELS[category] || category,
-          types: types.map((type) => ({
-            key: type,
-            label: TYPE_LABELS[type] || type,
-          })),
-        };
-      });
-      setMenu(menuData);
+        // Create menu structure
+        const menuData: MenuCategory[] = [
+          {
+            key: 'drinks',
+            label: 'Drinks',
+            types: [
+              { key: 'lemonades', label: 'Lemonades & Iced Tea' },
+              { key: 'alcohol', label: 'Alcohol' },
+              { key: 'smoothies', label: 'Smoothies & Milkshakes' },
+              { key: 'softdrinks', label: 'Soft Drinks' },
+              { key: 'nuts', label: 'Nuts' },
+              { key: 'hotdrinks', label: 'Hot Drinks' }
+            ]
+          },
+          {
+            key: 'shisha',
+            label: 'Shisha',
+            types: []
+          }
+        ];
+
+        // Process shisha data
+        const shishaCategory = menuData.find(cat => cat.key === 'shisha');
+        if (shishaCategory) {
+          // Group brands by leaf type
+          const brandsByType: Record<string, Set<string>> = {
+            blond: new Set(),
+            dark: new Set(),
+            cigar: new Set()
+          };
+
+          // Get brands from selections that have brands
+          selections.forEach((selection: any) => {
+            if (selection.brands && selection.brands.length > 0) {
+              selection.brands.forEach((brand: any) => {
+                if (brand.brand && brand.type) {
+                  brandsByType[brand.type]?.add(brand.brand);
+                }
+              });
+            }
+          });
+
+          // Create types with their brands
+          shishaCategory.types = [
+            {
+              key: 'blond',
+              label: 'Blond Leaf',
+              brands: Array.from(brandsByType.blond).map(brand => ({
+                key: brand,
+                label: brand
+              }))
+            },
+            {
+              key: 'dark',
+              label: 'Dark Leaf',
+              brands: Array.from(brandsByType.dark).map(brand => ({
+                key: brand,
+                label: brand
+              }))
+            },
+            {
+              key: 'cigar',
+              label: 'Cigar Leaf',
+              brands: Array.from(brandsByType.cigar).map(brand => ({
+                key: brand,
+                label: brand
+              }))
+            }
+          ].filter(type => type.brands.length > 0); // Only show types that have brands
+        }
+
+        setMenu(menuData);
+      } catch (error) {
+        console.error('Error fetching menu data:', error);
+      }
     }
     fetchMenu();
   }, []);
@@ -96,7 +158,7 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
 
       {/* Side drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full min-w-\[250px\] z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full min-w-[250px] z-50 transform transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         } bg-gradient-to-b from-[#030f0c] via-[#1a241b] to-[#030f0c] shadow-2xl border-r-2 border-[#04100C]`}
       >
@@ -129,62 +191,42 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
           
           {menu.map(cat => (
             <div key={cat.key}>
-              {cat.key === 'shisha' ? (
-                <>
-                  <button
-                    className={`w-full flex items-center justify-between py-2 text-left text-leaf uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-accent' : ''}`}
-                    onClick={() => setOpenCategory(openCategory === cat.key ? null : cat.key)}
-                    aria-expanded={openCategory === cat.key}
-                  >
-                    {cat.label}
-                    <span>{openCategory === cat.key ? '▲' : '▼'}</span>
-                  </button>
-                  {openCategory === cat.key && (
-                    <div className="pl-4 space-y-1">
+              <button
+                className={`w-full flex items-center justify-between py-2 text-left text-leaf uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-accent' : ''}`}
+                onClick={() => setOpenCategory(openCategory === cat.key ? null : cat.key)}
+                aria-expanded={openCategory === cat.key}
+              >
+                {cat.label}
+                <span>{openCategory === cat.key ? '▲' : '▼'}</span>
+              </button>
+              {openCategory === cat.key && (
+                <div className="pl-4 space-y-1">
+                  {cat.types?.map(type => (
+                    <div key={type.key}>
                       <Link
-                        href="/menu?tab=shisha&type=blond"
+                        href={cat.key === 'drinks' ? `/menu?tab=drink&section=${type.key}` : `/menu?tab=shisha&type=${type.key}`}
                         className="block py-2 text-base text-accent hover:text-leaf"
                         onClick={() => setOpen(false)}
                       >
-                        Blond Leaf
+                        {type.label}
                       </Link>
-                      <Link
-                        href="/menu?tab=shisha&type=dark"
-                        className="block py-2 text-base text-accent hover:text-leaf"
-                        onClick={() => setOpen(false)}
-                      >
-                        Dark Leaf
-                      </Link>
+                      {type.brands && type.brands.length > 0 && (
+                        <div className="pl-4 space-y-1">
+                          {type.brands.map(brand => (
+                            <Link
+                              key={brand.key}
+                              href={`/flavors/${encodeURIComponent(brand.key)}`}
+                              className="block py-1 text-sm text-accent/80 hover:text-leaf"
+                              onClick={() => setOpen(false)}
+                            >
+                              {brand.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <button
-                    className={`w-full flex items-center justify-between py-2 text-left text-leaf uppercase tracking-wider text-xs font-bold ${openCategory === cat.key ? 'text-accent' : ''}`}
-                    onClick={() => setOpenCategory(openCategory === cat.key ? null : cat.key)}
-                    aria-expanded={openCategory === cat.key}
-                  >
-                    {cat.label}
-                    {cat.types && cat.types.length > 0 && (
-                      <span>{openCategory === cat.key ? '▲' : '▼'}</span>
-                    )}
-                  </button>
-                  {cat.types && cat.types.length > 0 && openCategory === cat.key && (
-                    <div className="pl-4 space-y-1">
-                      {cat.types.map(type => (
-                        <Link
-                          key={type.key}
-                          href={cat.key === 'drinks' ? `/menu?tab=drink&section=${type.key}` : `/menu?tab=${cat.key}&type=${type.key}`}
-                          className="block py-2 text-base text-accent hover:text-leaf"
-                          onClick={() => setOpen(false)}
-                        >
-                          {type.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </>
+                  ))}
+                </div>
               )}
             </div>
           ))}

@@ -17,9 +17,6 @@ export default function PageHeader({
   leftSlot,
   rightSlot,
 }: PageHeaderProps) {
-
-  console.log(title, "title");
-  console.log(subtitle, "subtitle");
   
   return (
     <header

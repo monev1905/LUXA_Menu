@@ -46,7 +46,7 @@ export default function DrinksMenu({ sectionParam }: DrinksMenuProps) {
   if (!sectionParam) {
     // Show drink categories
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start">
         {DRINK_TYPES.map(type => (
           <MenuCard
             key={type.key}
@@ -55,7 +55,7 @@ export default function DrinksMenu({ sectionParam }: DrinksMenuProps) {
             price={0}
             isActive={true}
             onClick={() => router.replace(`/menu?tab=drink&section=${type.key}`)}
-            fontSize="text-xl"
+            fontSize="text-[1.50rem]"
           />
         ))}
       </div>

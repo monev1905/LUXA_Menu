@@ -11,13 +11,22 @@ interface Brand {
 interface LeafMenuProps {
   leafType: string;
   selectionId?: string;
+  brands?: Brand[]; // Optional brands prop for dark leaf
 }
 
-export default function LeafMenu({ leafType, selectionId }: LeafMenuProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
+export default function LeafMenu({ leafType, selectionId, brands }: LeafMenuProps) {
+  const [brandsState, setBrandsState] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If brands are provided (for dark leaf), use them directly
+    if (brands && brands.length > 0) {
+      setBrandsState(brands);
+      setLoading(false);
+      return;
+    }
+
+    // Otherwise, fetch brands from API (for cigar leaf)
     setLoading(true);
     Promise.all([
       fetch('/api/shisha-selections').then(res => res.json()),
@@ -46,7 +55,7 @@ export default function LeafMenu({ leafType, selectionId }: LeafMenuProps) {
           return hasFlavors;
         });
         
-        setBrands(brandsWithFlavors);
+        setBrandsState(brandsWithFlavors);
       }
       
       setLoading(false);
@@ -54,7 +63,7 @@ export default function LeafMenu({ leafType, selectionId }: LeafMenuProps) {
       console.error(`Error fetching ${leafType} data:`, error);
       setLoading(false);
     });
-  }, [leafType, selectionId]);
+  }, [leafType, selectionId, brands]);
 
   if (loading) {
     return (
@@ -65,7 +74,7 @@ export default function LeafMenu({ leafType, selectionId }: LeafMenuProps) {
     );
   }
 
-  if (brands.length === 0) {
+  if (brandsState.length === 0) {
     return (
       <div className="text-center py-10">
         <h3 className="text-accent text-xl font-semibold mb-2">{leafType.charAt(0).toUpperCase() + leafType.slice(1)} Leaf</h3>
@@ -75,16 +84,13 @@ export default function LeafMenu({ leafType, selectionId }: LeafMenuProps) {
   }
 
   return (
-    <div className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
-      {/* Brand Cards */}
-      <div className="space-y-4">
-        {brands.map((brand, index) => (
-          <BrandCard
-            key={brand.id || `${leafType}-brand-${index}`} // Fallback key
-            brand={brand}
-          />
-        ))}
-      </div>
+    <div className="mb-6 w-full grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start bg-transparent">
+      {brandsState.map((brand, index) => (
+        <BrandCard
+          key={brand.id || `${leafType}-brand-${index}`} // Fallback key
+          brand={brand}
+        />
+      ))}
     </div>
   );
 }

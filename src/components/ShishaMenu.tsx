@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import ShishaTypes from '@/components/ShishaTypes';
-import ShishaSelectionDropdown from '@/components/ShishaSelectionDropdown';
 import LeafMenu from '@/components/LeafMenu';
 
 const SHISHA_TYPES = [
@@ -29,7 +28,6 @@ export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }
   const [items, setItems] = useState<MenuItem[]>([]);
   const [selections, setSelections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openSelections, setOpenSelections] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -61,34 +59,38 @@ export default function ShishaMenu({ typeParam, shishaType, onShishaTypeChange }
         // Only show selections for the selected type
         if (activeType && activeType !== type.key) return null;
         
-        // For dark leaf, show selections with brands
+        // For dark leaf, show brands directly (no dropdown)
         if (activeType === 'dark') {
-          const darkSelections = selections.filter(selection => {
-            const cleanSelection = selection.selection?.trim();
-            return cleanSelection === 'Finest' || cleanSelection === 'Classic';
-          });
+          // Find the "Finest" selection and get its dark brands
+          const finestSelection = selections.find(selection => 
+            selection.selection?.trim() === 'Finest'
+          );
           
-          return darkSelections.map((selection, index) => {
-            // Get brands for this selection that are dark type
-            const selectionBrands = selection.brands
-              .filter((brand: any) => brand.type === 'dark')
-              .map((brand: any, brandIndex: number) => ({
-                ...brand,
-                id: brand.id || `brand-${index}-${brandIndex}`, // Ensure unique ID
-              }));
-            
+          if (!finestSelection) {
             return (
-              <ShishaSelectionDropdown
-                key={`selection-${selection.id || index}`}
-                selection={selection.selection?.trim() || ''}
-                brands={selectionBrands}
-                isOpen={openSelections.includes(selection.selection)}
-                onToggle={() => setOpenSelections(openSelections.includes(selection.selection)
-                  ? openSelections.filter(s => s !== selection.selection)
-                  : [selection.selection])}
-              />
+              <div key="dark" className="mb-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
+                <div className="text-center text-gray-500 py-10">
+                  No Finest selection found
+                </div>
+              </div>
             );
-          });
+          }
+          
+          const darkBrands = finestSelection.brands
+            .filter((brand: any) => brand.type === 'dark')
+            .map((brand: any, brandIndex: number) => ({
+              ...brand,
+              id: brand.id || `brand-${brandIndex}`,
+            }));
+          
+          return (
+            <LeafMenu 
+              key="dark" 
+              leafType="dark" 
+              selectionId={finestSelection.id} 
+              brands={darkBrands}
+            />
+          );
         } 
         // For cigar leaf, show the new brand/flavor interface
         else if (activeType === 'cigar') {

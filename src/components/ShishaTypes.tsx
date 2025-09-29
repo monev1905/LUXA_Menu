@@ -13,6 +13,7 @@ const SHISHA_TYPES = [
 
 export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
+  const [selectionsData, setSelectionsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,13 +21,15 @@ export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
     Promise.all([
       fetch('/api/shisha-selections').then(res => res.json()),
       fetch('/api/shisha-flavors').then(res => res.json())
-    ]).then(([selectionsData, flavorsData]) => {
+    ]).then(([selections, flavorsData]) => {
+      setSelectionsData(selections);
+      
       const typesWithBrands = SHISHA_TYPES.filter(type => {
         let hasBrandsWithFlavors = false;
         
         if (type.key === 'dark') {
           // For dark leaf, check in "Finest" and "Classic" selections
-          const darkSelections = selectionsData.filter((sel: any) => 
+          const darkSelections = selections.filter((sel: any) => 
             sel.selection?.trim() === 'Finest' || sel.selection?.trim() === 'Classic'
           );
           
@@ -43,7 +46,7 @@ export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
           });
         } else if (type.key === 'cigar') {
           // For cigar leaf, check in selection with id='3' or name containing 'cigar'
-          const cigarSelection = selectionsData.find((sel: any) => 
+          const cigarSelection = selections.find((sel: any) => 
             sel.id === '3' || sel.selection?.trim().toLowerCase().includes('cigar')
           );
           
@@ -60,7 +63,7 @@ export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
           }
         } else if (type.key === 'blond') {
           // For blond leaf, check in any selection that might contain blond brands
-          const blondSelection = selectionsData.find((sel: any) => 
+          const blondSelection = selections.find((sel: any) => 
             sel.selection?.trim().toLowerCase().includes('blond')
           );
           
@@ -88,6 +91,28 @@ export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
     });
   }, []);
 
+  // Helper function to get selection info for a type
+  const getSelectionInfo = (typeKey: string) => {
+    if (typeKey === 'dark') {
+      const finestSelection = selectionsData.find((sel: any) => 
+        sel.selection?.trim() === 'Finest'
+      );
+      return finestSelection ? {
+        selection: finestSelection.selection,
+        price: finestSelection.price
+      } : null;
+    } else if (typeKey === 'cigar') {
+      const cigarSelection = selectionsData.find((sel: any) => 
+        sel.id === '3' || sel.selection?.trim().toLowerCase().includes('cigar')
+      );
+      return cigarSelection ? {
+        selection: cigarSelection.selection,
+        price: cigarSelection.price
+      } : null;
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <div className="text-center text-gray-500 py-10">
@@ -107,17 +132,23 @@ export default function ShishaTypes({ onTypeSelect }: ShishaTypesProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8 px-4 justify-start bg-transparent">
-      {SHISHA_TYPES.filter(type => availableTypes.includes(type.key)).map(type => (
-        <MenuCard
-          key={type.key}
-          name={type.label}
-          description=""
-          isActive={true}
-          onClick={() => onTypeSelect(type.key)}
-          fontSize="text-xl"
-        />
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start bg-transparent">
+      {SHISHA_TYPES.filter(type => availableTypes.includes(type.key)).map(type => {
+        const selectionInfo = getSelectionInfo(type.key);
+        
+        return (
+          <MenuCard
+            key={type.key}
+            name={type.label}
+            description=""
+            isActive={true}
+            onClick={() => onTypeSelect(type.key)}
+            fontSize="text-[1.75rem]"
+            selection={selectionInfo?.selection}
+            selectionPrice={selectionInfo?.price}
+          />
+        );
+      })}
     </div>
   );
 }

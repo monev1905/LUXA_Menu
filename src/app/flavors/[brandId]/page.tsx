@@ -24,6 +24,8 @@ function FlavorsContent() {
   const [flavors, setFlavors] = useState<Flavor[]>([]);
   const [brandName, setBrandName] = useState<string>('');
   const [flavorType, setFlavorType] = useState<string>('');
+  const [selection, setSelection] = useState<string>('');
+  const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,36 +33,53 @@ function FlavorsContent() {
     // Decode the brand name from the URL parameter
     const decodedBrandName = decodeURIComponent(params.brandId as string);
     
-    fetch('/api/shisha-flavors')
-      .then(res => res.json())
-      .then(flavorsData => {
-        // Find the flavor type by looking at the first matching brand
-        const matchingFlavor = flavorsData.find((flavor: Flavor) => 
-          flavor.brand === decodedBrandName
-        );
-        
-        const type = matchingFlavor?.type || 'cigar'; // Default to cigar if not found
-        setFlavorType(type);
-        
-        // Filter flavors for this specific brand and type
-        const brandFlavors = flavorsData.filter((flavor: Flavor) => {
-          return flavor.brand === decodedBrandName && flavor.type === type;
-        });
-        
-        setBrandName(decodedBrandName);
-        setFlavors(brandFlavors);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching flavors:', error);
-        setLoading(false);
+    Promise.all([
+      fetch('/api/shisha-flavors').then(res => res.json()),
+      fetch('/api/shisha-selections').then(res => res.json())
+    ]).then(([flavorsData, selectionsData]) => {
+      // Find the flavor type by looking at the first matching brand
+      const matchingFlavor = flavorsData.find((flavor: Flavor) => 
+        flavor.brand === decodedBrandName
+      );
+      
+      const type = matchingFlavor?.type || 'cigar'; // Default to cigar if not found
+      setFlavorType(type);
+      
+      // Filter flavors for this specific brand and type
+      const brandFlavors = flavorsData.filter((flavor: Flavor) => {
+        return flavor.brand === decodedBrandName && flavor.type === type;
       });
+      
+      // Find the selection and price for this brand
+      const brandSelection = selectionsData.find((sel: any) => {
+        return sel.brands.some((brand: any) => 
+          brand.brand === decodedBrandName && brand.type === type
+        );
+      });
+      
+      if (brandSelection) {
+        setSelection(brandSelection.selection);
+        setPrice(brandSelection.price);
+      }
+      
+      setBrandName(decodedBrandName);
+      setFlavors(brandFlavors);
+      setLoading(false);
+    }).catch(error => {
+      console.error('Error fetching flavors:', error);
+      setLoading(false);
+    });
   }, [params.brandId]);
 
   const handleBack = () => {
     // Navigate back to the appropriate shisha type
     router.push(`/menu?tab=shisha&type=${flavorType}`);
   };
+
+  // Create subtitle with selection and price info
+  const subtitle = selection && price 
+    ? `${selection} • ${price.toFixed(2)} лв / €${(price / 1.96).toFixed(2)}`
+    : '';
 
   if (loading) {
     return (
@@ -103,6 +122,7 @@ function FlavorsContent() {
 
       <PageHeader
         title={brandName}
+        subtitle={subtitle}
         leftSlot={<HamburgerMenu inHeader />}
         rightSlot={
           <button
