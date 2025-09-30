@@ -7,7 +7,6 @@ interface MenuCardProps {
   href?: string;
   bgImage?: string;
   fontSize?: string; // e.g. 'text-3xl'
-  minHeight?: string; // e.g. 'h-[200px]'
   selection?: string; // e.g. 'Finest', 'Exclusive'
   selectionPrice?: number; // Price for the selection
 }
@@ -21,12 +20,11 @@ export default function MenuCard({
   href,
   bgImage,
   fontSize = 'text-[3.5rem]',
-  minHeight,
   selection,
   selectionPrice,
 }: MenuCardProps) {
-  // Convert BGN to EUR (approximate rate: 1 EUR = 1.96 BGN)
-  const convertToEuro = (bgnPrice: number) => (bgnPrice / 1.96).toFixed(2);
+  // Convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
+  const convertToEuro = (bgnPrice: number) => (bgnPrice / 1.95583).toFixed(2);
 
   const CardContent = (
     <>
