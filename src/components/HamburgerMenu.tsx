@@ -9,22 +9,11 @@ interface MenuCategory {
   types?: { label: string; key: string; brands?: { label: string; key: string }[] }[];
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  drinks: "Drinks",
-  shisha: "Shisha",
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  lemonades: "Lemonades & Iced Tea",
-  alcohol: "Alcohol",
-  smoothies: "Smoothies & Milkshakes",
-  softdrinks: "Soft Drinks",
-  nuts: "Nuts",
-  hotdrinks: "Hot Drinks",
-  blond: "Blond",
-  dark: "Dark",
-  cigar: "Cigar",
-};
+interface DrinkCategory {
+  id: string;
+  Category: string;
+  Order: number | null;
+}
 
 interface HamburgerMenuProps {
   inHeader?: boolean;
@@ -38,13 +27,9 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
   useEffect(() => {
     async function fetchMenu() {
       try {
-        // Fetch drinks
-        const drinksRes = await fetch("/api/drinks");
-        const drinks = await drinksRes.json();
-        
-        // Fetch shisha flavors
-        const shishaRes = await fetch("/api/shisha-flavors");
-        const shisha = await shishaRes.json();
+        // Fetch drink categories
+        const drinkCategoriesRes = await fetch("/api/drink-categories");
+        const drinkCategories = await drinkCategoriesRes.json();
         
         // Fetch shisha selections to get brands
         const selectionsRes = await fetch("/api/shisha-selections");
@@ -55,14 +40,10 @@ export default function HamburgerMenu({ inHeader = false }: HamburgerMenuProps) 
           {
             key: 'drinks',
             label: 'Drinks',
-            types: [
-              { key: 'lemonades', label: 'Lemonades & Iced Tea' },
-              { key: 'alcohol', label: 'Alcohol' },
-              { key: 'smoothies', label: 'Smoothies & Milkshakes' },
-              { key: 'softdrinks', label: 'Soft Drinks' },
-              { key: 'nuts', label: 'Nuts' },
-              { key: 'hotdrinks', label: 'Hot Drinks' }
-            ]
+            types: drinkCategories.map((category: DrinkCategory) => ({
+              key: category.Category.toLowerCase().replace(/\s+/g, '-'),
+              label: category.Category
+            }))
           },
           {
             key: 'shisha',

@@ -8,15 +8,28 @@ datasource db {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model DrinkCategories {
+  id       BigInt  @id @default(autoincrement())
+  Category String
+  Order    Decimal? @unique
+  imageUrl String?
+  Drinks   Drinks[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Drinks {
-  id          String  @id(map: "Drink_pkey")
+  id          BigInt    @id @default(autoincrement())
   name        String
   description String?
   price       Float
-  isActive    Boolean @default(true)
-  category    String?
+  isActive    Boolean   @default(true)
+  category_id BigInt
   type        String?
   imageUrl    String?
+  quantity    Decimal?
+  order       Decimal?
+  unit_type   UnitType  @default(мл)
+  DrinkCategories DrinkCategories @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -63,4 +76,9 @@ enum ShishaType {
   blond
   dark
   cigar
+}
+
+enum UnitType {
+  мл
+  гр
 }

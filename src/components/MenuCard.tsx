@@ -32,51 +32,59 @@ export default function MenuCard({
         <div className="absolute inset-0 w-full h-full z-0 bg-contain opacity-40 bg-[center_70%]" style={{backgroundImage: `url('${bgImage}')`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'}} />
       )}
       
-      {/* Main content centered */}
-      <div className="relative z-10 flex flex-col justify-center items-center w-full h-full">
-        <span className={`font-bold text-accent group-hover:text-leaf font-card ${fontSize}`}>
-          {name}
-        </span>
-        
-        {description && (
-          <div className="text-leaf text-base mt-2 text-center max-w-xs whitespace-pre-line bg-jungle-dark/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-leaf/20">{description}</div>
-        )}
-        {typeof price === 'number' && price > 0 && (
-          <div className="mt-2 flex flex-col items-center space-y-1">
-            <span className="text-xl font-bold text-accent">${price.toFixed(2)}</span>
-            <span className="text-sm text-leaf/80">USD</span>
-          </div>
-        )}
-        {!isActive && (
-          <div className="mt-2 text-xs font-semibold text-brown uppercase tracking-wide bg-brown/20 backdrop-blur-sm rounded-full px-3 py-1 border border-brown/30">Not available</div>
-        )}
-      </div>
+      {/* Main content area with flex layout */}
+      <div className="relative z-10 flex flex-col justify-between h-full w-full">
+        {/* Top content - centered */}
+        <div className="flex flex-col justify-center items-center flex-1">
+          <span className={`font-bold text-accent group-hover:text-leaf font-card ${fontSize}`}>
+            {name}
+          </span>
+          
+          {description && (
+            <div className="text-leaf text-base mt-2 text-center max-w-xs whitespace-pre-line bg-jungle-dark/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-leaf/20">{description}</div>
+          )}
+          
+          {!isActive && (
+            <div className="mt-2 text-xs font-semibold text-brown uppercase tracking-wide bg-brown/20 backdrop-blur-sm rounded-full px-3 py-1 border border-brown/30">Not available</div>
+          )}
+        </div>
 
+        {/* Bottom content - price and selection */}
+        <div className="flex justify-between items-end w-full px-2 pb-2">
+          {/* Selection on the left (only for shisha) */}
+          {selection && typeof selectionPrice === 'number' && selectionPrice > 0 ? (
+            <div className="text-leaf font-semibold bg-jungle-dark/70 backdrop-blur-sm rounded-full px-3 py-1">
+              {selection} selection
+            </div>
+          ) : (
+            <div></div> // Empty div to push price to the right
+          )}
 
-      { selection && typeof selectionPrice === 'number' && selectionPrice > 0 && (
-        <div className="bottom-4 left-0 right-0 z-20 flex justify-between items-center w-full px-2">
-          {selection && (
-            <div className="">
-              <div className="text-leaf font-semibold bg-jungle-dark/70 backdrop-blur-sm rounded-full">
-                {selection} selection
+          {/* Price on the right */}
+          {typeof price === 'number' && price > 0 && (
+            <div className="text-right">
+              <div className="text-base font-bold text-accent">
+                {price.toFixed(2)} лв
+              </div>
+              <div className="text-base font-bold text-accent">
+                €{convertToEuro(price)}
               </div>
             </div>
           )}
 
-
-          {typeof selectionPrice === 'number' && selectionPrice > 0 && (
+          {/* Selection price on the right (only for shisha) */}
+          {selection && typeof selectionPrice === 'number' && selectionPrice > 0 && (
             <div className="text-right">
-              <div className="font-bold text-accent">
+              <div className="text-base font-bold text-accent">
                 {selectionPrice.toFixed(2)} лв
               </div>
-              <div className="font-bold text-accent">
+              <div className="text-base font-bold text-accent">
                 €{convertToEuro(selectionPrice)}
               </div>
             </div>
           )}
         </div>
-      )}
-    
+      </div>
     </>
   );
 

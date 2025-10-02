@@ -1,88 +1,86 @@
+"use client";
+
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import MenuCard from '@/components/MenuCard';
+import { useSearchParams } from 'next/navigation';
+import MenuCard from './MenuCard';
 
-const DRINK_TYPES = [
-  { key: 'lemonades', label: 'Lemonades & Iced Tea', emoji: '🍋' },
-  { key: 'alcohol', label: 'Alcohol', emoji: '🥃' },
-  { key: 'smoothies', label: 'Smoothies & Milkshakes', emoji: '🥤' },
-  { key: 'softdrinks', label: 'Soft Drinks', emoji: '��' },
-  { key: 'nuts', label: 'Nuts', emoji: '🥜' },
-  { key: 'hotdrinks', label: 'Hot Drinks', emoji: '☕' },
-];
+interface DrinkCategory {
+  id: string;
+  Category: string;
+  Order: number | null;
+  imageUrl: string | null;
+  Drinks: Drink[];
+}
 
-interface MenuItem {
+interface Drink {
   id: string;
   name: string;
-  price?: number;
+  description: string | null;
+  price: number;
   isActive: boolean;
-  type?: string;
-  imageUrl?: string;
+  category_id: string;
+  type: string | null;
+  imageUrl: string | null;
+  quantity: number | null;
+  order: number | null;
+  unit_type: 'мл' | 'гр';
 }
 
-interface DrinksMenuProps {
-  sectionParam: string | null;
-}
-
-export default function DrinksMenu({ sectionParam }: DrinksMenuProps) {
-  const router = useRouter();
-  const [items, setItems] = useState<MenuItem[]>([]);
+export default function DrinksMenu() {
+  const [categories, setCategories] = useState<DrinkCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const sectionParam = searchParams.get('section');
 
   useEffect(() => {
-    setLoading(true);
-    fetch('/api/drinks')
-      .then(res => res.json())
-      .then(data => {
-        setItems(data);
+    async function fetchCategories() {
+      try {
+        const response = await fetch('/api/drink-categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch drink categories');
+        }
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching drink categories:', error);
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+    fetchCategories();
   }, []);
 
   if (loading) {
-    return <div className="text-center text-gray-500 py-10">Loading drinks...</div>;
-  }
-
-  if (!sectionParam) {
-    // Show drink categories
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start">
-        {DRINK_TYPES.map(type => (
-          <MenuCard
-            key={type.key}
-            name={type.label}
-            description={undefined}
-            price={0}
-            isActive={true}
-            onClick={() => router.replace(`/menu?tab=drink&section=${type.key}`)}
-            fontSize="text-[1.50rem]"
-          />
-        ))}
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-accent text-xl">Loading drinks...</div>
       </div>
     );
   }
 
-  // Show filtered drinks for the selected section
-  const filteredItems = items.filter(item => item.type === sectionParam);
-
-  if (filteredItems.length === 0) {
-    return <div className="text-center text-gray-500 py-10">No drinks found.</div>;
+  if (categories.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-accent text-xl">No drink categories available</div>
+      </div>
+    );
   }
 
   return (
-    <ul className="space-y-6 w-[95vw] sm:w-[22rem] md:w-[25rem]">
-      {filteredItems.map(item => (
-        <li
-          key={item.id}
-          className={`w-[90%] mx-auto p-4 rounded-xl flex flex-col border-2 border-gray-600 shadow-md transition-all duration-200 ${!item.isActive ? 'opacity-50 grayscale pointer-events-none' : ''}`}
-          style={{ fontFamily: 'CardFont, sans-serif', fontWeight: 500, letterSpacing: '0.01em' }}
-        >
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-lg text-leaf font-bold">{item.name}</span>
-            <span className="text-leaf font-semibold text-base font-roboto">${item.price?.toFixed(2) || '0.00'}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-8">
+      {/* Categories Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+        {categories.map((category) => (
+          <MenuCard
+            key={category.id}
+            name={category.Category}
+            href={`/menu?tab=drink&section=${category.Category.toLowerCase().replace(/\s+/g, '-')}`}
+            bgImage={category.imageUrl || undefined}
+            fontSize="text-[1.75rem]"
+            isActive={!sectionParam || sectionParam === category.Category.toLowerCase().replace(/\s+/g, '-')}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

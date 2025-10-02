@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader';
 import HamburgerMenu from '@/components/HamburgerMenu';
 import Footer from '@/components/Footer';
 import DrinksMenu from '@/components/DrinksMenu';
+import DrinksList from '@/components/DrinksList';
 import ShishaMenu from '@/components/ShishaMenu';
 
 function MenuContent() {
@@ -109,7 +110,12 @@ function MenuContent() {
             </div>
           </div>
         ) : tabParam === 'drink' ? (
-          <DrinksMenu sectionParam={sectionParam} />
+          // Show drinks categories or specific drinks list
+          sectionParam ? (
+            <DrinksList sectionParam={sectionParam} />
+          ) : (
+            <DrinksMenu sectionParam={sectionParam} />
+          )
         ) : tabParam === 'shisha' ? (
           <ShishaMenu 
             typeParam={typeParam} 
