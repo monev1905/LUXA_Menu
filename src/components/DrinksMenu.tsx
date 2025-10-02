@@ -78,6 +78,7 @@ export default function DrinksMenu() {
             bgImage={category.imageUrl || undefined}
             fontSize="text-[1.75rem]"
             isActive={!sectionParam || sectionParam === category.Category.toLowerCase().replace(/\s+/g, '-')}
+            fontFamily="font-roboto"
           />
         ))}
       </div>

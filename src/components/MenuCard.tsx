@@ -7,6 +7,7 @@ interface MenuCardProps {
   href?: string;
   bgImage?: string;
   fontSize?: string; // e.g. 'text-3xl'
+  fontFamily?: string; // e.g. 'font-roboto'
   selection?: string; // e.g. 'Finest', 'Exclusive'
   selectionPrice?: number; // Price for the selection
 }
@@ -20,6 +21,7 @@ export default function MenuCard({
   href,
   bgImage,
   fontSize = 'text-[3.5rem]',
+  fontFamily = '',
   selection,
   selectionPrice,
 }: MenuCardProps) {
@@ -36,16 +38,16 @@ export default function MenuCard({
       <div className="relative z-10 flex flex-col justify-between h-full w-full">
         {/* Top content - centered */}
         <div className="flex flex-col justify-center items-center flex-1">
-          <span className={`font-bold text-accent group-hover:text-leaf font-card ${fontSize}`}>
+          <span className={`font-bold text-accent group-hover:text-leaf text-center font-card ${fontSize} ${fontFamily}`}>
             {name}
           </span>
           
           {description && (
-            <div className="text-leaf text-base mt-2 text-center max-w-xs whitespace-pre-line bg-jungle-dark/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-leaf/20">{description}</div>
+            <div className={`text-leaf text-base mt-2 text-center max-w-xs whitespace-pre-line bg-jungle-dark/30 backdrop-blur-sm px-3 py-2 ${fontFamily}`}>{description}</div>
           )}
           
           {!isActive && (
-            <div className="mt-2 text-xs font-semibold text-brown uppercase tracking-wide bg-brown/20 backdrop-blur-sm rounded-full px-3 py-1 border border-brown/30">Not available</div>
+            <div className={`mt-2 text-xs font-semibold text-brown uppercase tracking-wide bg-brown/20 backdrop-blur-sm rounded-full px-3 py-1 border border-brown/30 ${fontFamily}`}>Not available</div>
           )}
         </div>
 
@@ -53,7 +55,7 @@ export default function MenuCard({
         <div className="flex justify-between items-end w-full px-2 pb-2">
           {/* Selection on the left (only for shisha) */}
           {selection && typeof selectionPrice === 'number' && selectionPrice > 0 ? (
-            <div className="text-leaf font-semibold bg-jungle-dark/70 backdrop-blur-sm rounded-full px-3 py-1">
+            <div className={`text-leaf font-semibold bg-jungle-dark/70 backdrop-blur-sm rounded-full px-3 py-1 ${fontFamily}`}>
               {selection} selection
             </div>
           ) : (
@@ -62,7 +64,7 @@ export default function MenuCard({
 
           {/* Price on the right */}
           {typeof price === 'number' && price > 0 && (
-            <div className="text-right">
+            <div className={`text-right ${fontFamily}`}>
               <div className="text-base font-bold text-accent">
                 {price.toFixed(2)} лв
               </div>
@@ -74,7 +76,7 @@ export default function MenuCard({
 
           {/* Selection price on the right (only for shisha) */}
           {selection && typeof selectionPrice === 'number' && selectionPrice > 0 && (
-            <div className="text-right">
+            <div className={`text-right ${fontFamily}`}>
               <div className="text-base font-bold text-accent">
                 {selectionPrice.toFixed(2)} лв
               </div>

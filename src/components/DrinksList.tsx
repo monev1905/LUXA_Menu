@@ -103,6 +103,7 @@ export default function DrinksList({ sectionParam }: DrinksListProps) {
               isActive={drink.isActive}
               bgImage={drink.imageUrl || undefined}
               fontSize="text-[1.5rem]"
+              fontFamily="font-roboto"
             />
           ))}
         </div>
@@ -111,7 +112,7 @@ export default function DrinksList({ sectionParam }: DrinksListProps) {
       {/* Special Items Section */}
       {specialDrinks.length > 0 && (
         <div className="space-y-4">
-          <div className="mb-8 px-20">
+          <div className="px-20 mb-8">
             <hr className="border-[#1a241b]"></hr>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
@@ -124,6 +125,7 @@ export default function DrinksList({ sectionParam }: DrinksListProps) {
                 isActive={drink.isActive}
                 bgImage={drink.imageUrl || undefined}
                 fontSize="text-[1.5rem]"
+                fontFamily="font-roboto"
               />
             ))}
           </div>
