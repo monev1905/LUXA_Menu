@@ -74,9 +74,21 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
         // Staging/Development - Show Welcome button that navigates to /menu
         <button
           onClick={handleWelcome}
-          className="mt-4 px-8 py-3 rounded-lg bg-leaf text-white text-xl font-semibold shadow-lg hover:bg-leaf/80 transition-all duration-200 border-2 border-leaf z-10"
+          className="group relative mt-4 px-10 py-4 rounded-xl text-white text-xl font-bold shadow-xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl z-10"
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backgroundImage:
+              "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%)",
+          }}
         >
-          Welcome
+          <div
+            className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{
+              backgroundImage:
+                "linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.4) 100%)",
+            }}
+          />
+          <span className="relative z-10">Welcome</span>
         </button>
       )}
 
