@@ -30,25 +30,31 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    // Basic validation
-    if (!data.name || typeof data.name !== 'string') {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    
+    // Enhanced validation
+    if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
+      return NextResponse.json({ error: 'Name is required and must be a non-empty string' }, { status: 400 });
     }
-    if (!data.brand_id || typeof data.brand_id !== 'number') {
+    
+    if (!data.brand_id || (typeof data.brand_id !== 'number' && typeof data.brand_id !== 'string')) {
       return NextResponse.json({ error: 'Valid brand_id is required' }, { status: 400 });
     }
     
+    // Sanitize and validate data
+    const sanitizedData = {
+      name: data.name.trim(),
+      description: data.description ? data.description.trim() : null,
+      isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
+      imageUrl: data.imageUrl ? data.imageUrl.trim() : '',
+      brand_id: BigInt(data.brand_id)
+    };
+    
     const flavor = await prisma.shishaFlavors.create({ 
-      data: {
-        name: data.name,
-        description: data.description,
-        isActive: data.isActive ?? true,
-        imageUrl: data.imageUrl || '',
-        brand_id: BigInt(data.brand_id)
-      }
+      data: sanitizedData
     });
     return NextResponse.json(flavor, { status: 201 });
   } catch (error: any) {
+    console.error('Error creating shisha flavor:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
