@@ -46,11 +46,11 @@ export async function GET() {
           id: `special-${drink.id.toString()}-${category.id}`,
           category_id: category.id.toString(),
           type: 'special',
-          order: 999999, // High order number to put at bottom
+          order: 999999 as any, // High order number to put at bottom
         }));
         
         categoryData.Drinks = [...categoryData.Drinks, ...specialDrinks]
-          .sort((a, b) => (a.order || 0) - (b.order || 0));
+          .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
       }
 
       return categoryData;

@@ -10,6 +10,7 @@ interface MenuCardProps {
   fontFamily?: string; // e.g. 'font-roboto'
   selection?: string; // e.g. 'Finest', 'Exclusive'
   selectionPrice?: number; // Price for the selection
+  minHeight?: string; // e.g. 'h-32'
 }
 
 export default function MenuCard({ 
@@ -24,6 +25,7 @@ export default function MenuCard({
   fontFamily = '',
   selection,
   selectionPrice,
+  minHeight = 'h-[140px]',
 }: MenuCardProps) {
   // Convert BGN to EUR (approximate rate: 1 EUR = 1.95583 BGN)
   const convertToEuro = (bgnPrice: number) => (bgnPrice / 1.95583).toFixed(2);
@@ -90,7 +92,7 @@ export default function MenuCard({
     </>
   );
 
-  const baseClass = `relative h-[140px] min-w-[280px] bg-gradient-to-br from-jungle-light/80 via-jungle-dark/60 to-jungle-light/70 backdrop-blur-lg rounded-3xl shadow-2xl p-4 flex flex-col items-center border-2 border-brown/50 hover:border-accent/70 transition-all duration-300 group overflow-hidden hover:shadow-accent/20 hover:scale-[1.02] ${!isActive ? 'opacity-50 grayscale pointer-events-none' : ''} ${onClick || href ? 'cursor-pointer' : ''}`;
+  const baseClass = `relative ${minHeight} min-w-[280px] bg-gradient-to-br from-jungle-light/80 via-jungle-dark/60 to-jungle-light/70 backdrop-blur-lg rounded-3xl shadow-2xl p-4 flex flex-col items-center border-2 border-brown/50 hover:border-accent/70 transition-all duration-300 group overflow-hidden hover:shadow-accent/20 hover:scale-[1.02] ${!isActive ? 'opacity-50 grayscale pointer-events-none' : ''} ${onClick || href ? 'cursor-pointer' : ''}`;
 
   if (href) {
     return (

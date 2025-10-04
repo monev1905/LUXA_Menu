@@ -112,11 +112,10 @@ async function main() {
   // Seed some drinks
   await prisma.drinks.create({
     data: {
-      id: 'drink-1',
       name: 'Mojito',
       description: 'Fresh mint and lime cocktail',
       price: 12.99,
-      category: 'Cocktails',
+      category_id: BigInt(1), // Use BigInt for category_id
       type: 'Alcoholic',
       imageUrl: 'https://example.com/mojito.jpg'
     }
@@ -124,11 +123,10 @@ async function main() {
 
   await prisma.drinks.create({
     data: {
-      id: 'drink-2',
       name: 'Fresh Orange Juice',
       description: 'Freshly squeezed orange juice',
       price: 4.99,
-      category: 'Non-Alcoholic',
+      category_id: BigInt(2), // Use BigInt for category_id
       type: 'Juice',
       imageUrl: 'https://example.com/orange-juice.jpg'
     }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import MenuCard from './MenuCard';
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import MenuCard from "./MenuCard";
 
 interface DrinkCategory {
   id: string;
@@ -23,26 +23,30 @@ interface Drink {
   imageUrl: string | null;
   quantity: number | null;
   order: number | null;
-  unit_type: 'мл' | 'гр';
+  unit_type: "мл" | "гр";
 }
 
-export default function DrinksMenu() {
+interface DrinksMenuProps {
+  sectionParam?: string | null;
+}
+
+export default function DrinksMenu({ sectionParam }: DrinksMenuProps) {
   const [categories, setCategories] = useState<DrinkCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
-  const sectionParam = searchParams.get('section');
+  const currentSection = sectionParam || searchParams.get("section");
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch('/api/drink-categories');
+        const response = await fetch("/api/drink-categories");
         if (!response.ok) {
-          throw new Error('Failed to fetch drink categories');
+          throw new Error("Failed to fetch drink categories");
         }
         const data = await response.json();
         setCategories(data);
       } catch (error) {
-        console.error('Error fetching drink categories:', error);
+        console.error("Error fetching drink categories:", error);
       } finally {
         setLoading(false);
       }
@@ -74,10 +78,17 @@ export default function DrinksMenu() {
           <MenuCard
             key={category.id}
             name={category.Category}
-            href={`/menu?tab=drink&section=${category.Category.toLowerCase().replace(/\s+/g, '-')}`}
+            href={`/menu?tab=drink&section=${category.Category.toLowerCase().replace(
+              /\s+/g,
+              "-"
+            )}`}
             bgImage={category.imageUrl || undefined}
             fontSize="text-[1.75rem]"
-            isActive={!sectionParam || sectionParam === category.Category.toLowerCase().replace(/\s+/g, '-')}
+            isActive={
+              !currentSection ||
+              currentSection ===
+                category.Category.toLowerCase().replace(/\s+/g, "-")
+            }
             fontFamily="font-roboto"
           />
         ))}

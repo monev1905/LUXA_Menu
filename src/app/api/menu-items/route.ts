@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get('category');
-  const where = category ? { category } : {};
+  const where = category ? { type: category } : {};
   const items = await prisma.drinks.findMany({ where });
   return NextResponse.json(items);
 }
