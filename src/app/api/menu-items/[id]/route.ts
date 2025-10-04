@@ -9,7 +9,7 @@ export async function DELETE(
   try {
     await prisma.drinks.delete({ where: { id: BigInt(id) } });
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
   }
 }

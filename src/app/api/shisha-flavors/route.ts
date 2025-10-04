@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest) {
       }
     });
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Flavor not found or update failed' }, { status: 400 });
   }
 }
@@ -85,7 +85,7 @@ export async function DELETE(req: NextRequest) {
   try {
     await prisma.shishaFlavors.delete({ where: { id: BigInt(id) } });
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Flavor not found or delete failed' }, { status: 400 });
   }
 }

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface LogoLoaderProps {
   onWelcome: () => void;
@@ -12,46 +13,49 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
 
   useEffect(() => {
     setIsClient(true);
-    setIsProduction(process.env.NEXT_PUBLIC_ENVIRONMENT === 'production');
+    setIsProduction(process.env.NEXT_PUBLIC_ENVIRONMENT === "production");
   }, []);
 
   const handleWelcome = () => {
     onWelcome(); // Call the original callback to hide the loader
-    router.push('/menu'); // Navigate to menu
+    router.push("/menu"); // Navigate to menu
   };
-  
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-transparent">
       {/* Smoke effect background */}
       <div className="absolute inset-0 pointer-events-none">
-        <img
+        <Image
           src="/smoke.gif"
           alt="Smoke effect"
-          className="w-full h-full object-cover"
-          style={{ 
+          fill
+          className="object-cover"
+          style={{
             opacity: 0.3,
-            animation: 'fade-in-out 4s ease-in-out infinite',
-            mixBlendMode: 'screen'
+            animation: "fade-in-out 4s ease-in-out infinite",
+            mixBlendMode: "screen",
           }}
+          priority
         />
       </div>
-      
+
       <div className="relative w-48 h-48 mb-8 z-10">
         {/* Logo image */}
-        <img
+        <Image
           src="/logo.png"
           alt="Logo"
+          width={192}
+          height={192}
           className="w-full h-full object-contain"
-          style={{ display: 'block' }}
+          style={{ display: "block" }}
+          priority
         />
       </div>
-      
+
       {!isClient ? (
         // Show loading state during hydration
         <div className="text-center z-10">
-          <div className="text-2xl font-bold text-white mb-4">
-            Loading...
-          </div>
+          <div className="text-2xl font-bold text-white mb-4">Loading...</div>
         </div>
       ) : isProduction ? (
         // Production - Show Coming Soon message
@@ -60,7 +64,7 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
             🚀 Coming Soon
           </div>
           <div className="text-lg text-white/90">
-            We're working hard to bring you something amazing!
+            We&apos;re working hard to bring you something amazing!
           </div>
           <div className="text-sm mt-2 text-white/70">
             Stay tuned for updates!
@@ -75,11 +79,16 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({ onWelcome }) => {
           Welcome
         </button>
       )}
-      
+
       <style jsx>{`
         @keyframes fade-in-out {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.4; }
+          0%,
+          100% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 0.4;
+          }
         }
       `}</style>
     </div>

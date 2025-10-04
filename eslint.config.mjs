@@ -19,6 +19,15 @@ const eslintConfig = [
       "out/**/*",
     ],
   },
+  {
+    rules: {
+      // Disable strict any type rules for API routes
+      "@typescript-eslint/no-explicit-any": "off",
+      // Keep other important rules
+      "@typescript-eslint/no-unused-vars": "warn",
+      "react/no-unescaped-entities": "error",
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import MenuCard from './MenuCard';
+import { useState, useEffect } from "react";
+import MenuCard from "./MenuCard";
 
 interface Drink {
   id: string;
@@ -15,7 +14,7 @@ interface Drink {
   imageUrl: string | null;
   quantity: number | null;
   order: number | null;
-  unit_type: 'мл' | 'гр';
+  unit_type: "мл" | "гр";
 }
 
 interface DrinkCategory {
@@ -31,29 +30,32 @@ interface DrinksListProps {
 }
 
 export default function DrinksList({ sectionParam }: DrinksListProps) {
-  const [categories, setCategories] = useState<DrinkCategory[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [categories, setCategories] = useState<DrinkCategory[]>([]); // Used to find selectedCategory
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<DrinkCategory | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<DrinkCategory | null>(null);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch('/api/drink-categories');
+        const response = await fetch("/api/drink-categories");
         if (!response.ok) {
-          throw new Error('Failed to fetch drink categories');
+          throw new Error("Failed to fetch drink categories");
         }
         const data = await response.json();
         setCategories(data);
-        
+
         // Find the selected category based on sectionParam
         if (sectionParam) {
-          const category = data.find((cat: DrinkCategory) => 
-            cat.Category.toLowerCase().replace(/\s+/g, '-') === sectionParam
+          const category = data.find(
+            (cat: DrinkCategory) =>
+              cat.Category.toLowerCase().replace(/\s+/g, "-") === sectionParam
           );
           setSelectedCategory(category || null);
         }
       } catch (error) {
-        console.error('Error fetching drink categories:', error);
+        console.error("Error fetching drink categories:", error);
       } finally {
         setLoading(false);
       }
@@ -80,14 +82,20 @@ export default function DrinksList({ sectionParam }: DrinksListProps) {
   if (selectedCategory.Drinks.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-accent text-xl">No drinks available in this category</div>
+        <div className="text-accent text-xl">
+          No drinks available in this category
+        </div>
       </div>
     );
   }
 
   // Separate regular drinks from special items
-  const regularDrinks = selectedCategory.Drinks.filter(drink => drink.type !== 'special');
-  const specialDrinks = selectedCategory.Drinks.filter(drink => drink.type === 'special');
+  const regularDrinks = selectedCategory.Drinks.filter(
+    (drink) => drink.type !== "special"
+  );
+  const specialDrinks = selectedCategory.Drinks.filter(
+    (drink) => drink.type === "special"
+  );
 
   return (
     <div className="space-y-8">

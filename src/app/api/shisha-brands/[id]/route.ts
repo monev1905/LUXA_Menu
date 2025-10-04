@@ -9,7 +9,7 @@ export async function PATCH(
     const { id } = await params;
     const data = await req.json();
     
-    const brand = await prisma.shishaBrands.update({
+    await prisma.shishaBrands.update({
       where: { id: BigInt(id) },
       data: {
         logoUrl: data.logoUrl
