@@ -60,7 +60,12 @@ export async function GET() {
       return categoryData;
     });
 
-    return NextResponse.json(transformedCategories);
+    return NextResponse.json(transformedCategories, {
+      headers: {
+        "Cache-Control":
+          "public, max-age=1800, s-maxage=1800, stale-while-revalidate=3600",
+      },
+    });
   } catch (error) {
     console.error("Error fetching drink categories:", error);
     return NextResponse.json(

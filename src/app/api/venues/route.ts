@@ -7,7 +7,7 @@ export async function GET() {
   return NextResponse.json(venues, {
     headers: {
       "Cache-Control":
-        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        "public, max-age=1800, s-maxage=1800, stale-while-revalidate=3600",
     },
   });
 }
