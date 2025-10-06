@@ -11,7 +11,7 @@ datasource db {
 model DrinkCategories {
   id       BigInt  @id @default(autoincrement())
   Category String
-  Order    Decimal? @unique
+  Order    Int? @unique
   imageUrl String?
   Drinks   Drinks[]
 }
@@ -27,7 +27,7 @@ model Drinks {
   type        String?
   imageUrl    String?
   quantity    Decimal?
-  order       Decimal?
+  order       Int?
   unit_type   unitType  @default(ML)
   DrinkCategories DrinkCategories @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -58,7 +58,7 @@ model ShishaFlavors {
 model ShishaSelections {
   id           BigInt         @id(map: "ShishaSelections2_pkey") @default(autoincrement())
   Selection    String?
-  Price        Decimal?       @db.Decimal
+  Price        Decimal?       @db.Decimal(10,2)
   ShishaBrands ShishaBrands[]
 }
 
