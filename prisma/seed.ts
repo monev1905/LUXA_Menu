@@ -4,14 +4,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Delete existing data in correct order (respecting foreign keys)
-  await prisma.shishaFlavors.deleteMany();
-  await prisma.shishaBrands.deleteMany();
-  await prisma.shishaSelections.deleteMany();
-  await prisma.drinks.deleteMany();
-  await prisma.venues.deleteMany();
+  await prisma.ShishaFlavors.deleteMany();
+  await prisma.ShishaBrands.deleteMany();
+  await prisma.ShishaSelections.deleteMany();
+  await prisma.Drinks.deleteMany();
+  await prisma.Venues.deleteMany();
 
   // Seed venue
-  await prisma.venues.create({
+  await prisma.Venues.create({
     data: {
       id: "venue-1",
       name: "Shisha Lounge",
@@ -24,21 +24,21 @@ async function main() {
   });
 
   // Seed shisha selections
-  const classicSelection = await prisma.shishaSelections.create({
+  const classicSelection = await prisma.ShishaSelections.create({
     data: {
       Selection: "Classic",
       Price: 24.99,
     },
   });
 
-  const finestSelection = await prisma.shishaSelections.create({
+  const finestSelection = await prisma.ShishaSelections.create({
     data: {
       Selection: "Finest",
       Price: 27.99,
     },
   });
 
-  const exclusiveSelection = await prisma.shishaSelections.create({
+  const exclusiveSelection = await prisma.ShishaSelections.create({
     data: {
       Selection: "Exclusive",
       Price: 34.99,
@@ -46,7 +46,7 @@ async function main() {
   });
 
   // Seed shisha brands
-  const darksideBrand = await prisma.shishaBrands.create({
+  const darksideBrand = await prisma.ShishaBrands.create({
     data: {
       Brand: "Darkside",
       Selection_id: classicSelection.id,
@@ -55,7 +55,7 @@ async function main() {
     },
   });
 
-  const musthaveBrand = await prisma.shishaBrands.create({
+  const musthaveBrand = await prisma.ShishaBrands.create({
     data: {
       Brand: "Musthave",
       Selection_id: finestSelection.id,
@@ -64,7 +64,7 @@ async function main() {
     },
   });
 
-  const boncheBrand = await prisma.shishaBrands.create({
+  const boncheBrand = await prisma.ShishaBrands.create({
     data: {
       Brand: "Bonche",
       Selection_id: exclusiveSelection.id,
@@ -74,7 +74,7 @@ async function main() {
   });
 
   // Seed shisha flavors
-  await prisma.shishaFlavors.create({
+  await prisma.ShishaFlavors.create({
     data: {
       name: "Pistachio",
       description: "Rich and nutty flavor",
@@ -83,7 +83,7 @@ async function main() {
     },
   });
 
-  await prisma.shishaFlavors.create({
+  await prisma.ShishaFlavors.create({
     data: {
       name: "Coconut",
       description: "Tropical coconut taste",
@@ -92,7 +92,7 @@ async function main() {
     },
   });
 
-  await prisma.shishaFlavors.create({
+  await prisma.ShishaFlavors.create({
     data: {
       name: "Wild Strawberry",
       description: "Sweet and fruity",
@@ -101,7 +101,7 @@ async function main() {
     },
   });
 
-  await prisma.shishaFlavors.create({
+  await prisma.ShishaFlavors.create({
     data: {
       name: "Rocketman",
       description: "Premium cigar blend",
@@ -111,7 +111,7 @@ async function main() {
   });
 
   // Seed some drinks
-  await prisma.drinks.create({
+  await prisma.Drinks.create({
     data: {
       name: "Mojito",
       description: "Fresh mint and lime cocktail",
@@ -122,7 +122,7 @@ async function main() {
     },
   });
 
-  await prisma.drinks.create({
+  await prisma.Drinks.create({
     data: {
       name: "Fresh Orange Juice",
       description: "Freshly squeezed orange juice",
