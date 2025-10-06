@@ -78,7 +78,7 @@ enum ShishaType {
   cigar
 }
 
-enum UnitType {
-  мл
-  гр
+enum unitType {
+  GR  @map("гр")
+  ML  @map("мл")
 }
