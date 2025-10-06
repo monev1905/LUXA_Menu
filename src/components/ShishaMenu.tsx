@@ -65,6 +65,13 @@ export default function ShishaMenu({
 
           const darkBrands = finestSelection.brands
             .filter((brand) => brand.type === "dark")
+            .filter((brand) => {
+              // Only show brands that have active flavors
+              return shishaFlavors.some(
+                (flavor) =>
+                  flavor.brand === brand.brand && flavor.type === "dark"
+              );
+            })
             .map((brand, brandIndex: number) => ({
               ...brand,
               id: brand.id || `brand-${brandIndex}`,

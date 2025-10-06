@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const flavors = await prisma.shishaFlavors.findMany({
+    where: { isActive: true },
     include: {
       ShishaBrands: {
         select: {

@@ -19,7 +19,7 @@ export default function LeafMenu({
   // If brands are provided (for dark leaf), use them directly
   if (brands && brands.length > 0) {
     return (
-      <div className="mb-6 w-full grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start bg-transparent">
+      <div className="mb-6 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl px-4 justify-start bg-transparent">
         {brands.map((brand, index) => (
           <BrandCard
             key={brand.id || `${leafType}-brand-${index}`}
@@ -83,7 +83,7 @@ export default function LeafMenu({
   }
 
   return (
-    <div className="mb-6 w-full grid grid-cols-1 sm:grid-cols-2 gap-8 px-4 justify-start bg-transparent">
+    <div className="mb-6 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl px-4 justify-start bg-transparent">
       {brandsWithFlavors.map((brand, index) => (
         <BrandCard
           key={brand.id || `${leafType}-brand-${index}`} // Fallback key
