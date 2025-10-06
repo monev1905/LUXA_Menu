@@ -4,14 +4,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Delete existing data in correct order (respecting foreign keys)
-  await prisma.ShishaFlavors.deleteMany();
-  await prisma.ShishaBrands.deleteMany();
-  await prisma.ShishaSelections.deleteMany();
-  await prisma.Drinks.deleteMany();
-  await prisma.Venues.deleteMany();
+  await prisma.shishaFlavors.deleteMany();
+  await prisma.shishaBrands.deleteMany();
+  await prisma.shishaSelections.deleteMany();
+  await prisma.drinks.deleteMany();
+  await prisma.venues.deleteMany();
 
   // Seed venue
-  await prisma.Venues.create({
+  await prisma.venues.create({
     data: {
       id: "venue-1",
       name: "Shisha Lounge",
@@ -24,21 +24,21 @@ async function main() {
   });
 
   // Seed shisha selections
-  const classicSelection = await prisma.ShishaSelections.create({
+  const classicSelection = await prisma.shishaSelections.create({
     data: {
       Selection: "Classic",
       Price: 24.99,
     },
   });
 
-  const finestSelection = await prisma.ShishaSelections.create({
+  const finestSelection = await prisma.shishaSelections.create({
     data: {
       Selection: "Finest",
       Price: 27.99,
     },
   });
 
-  const exclusiveSelection = await prisma.ShishaSelections.create({
+  const exclusiveSelection = await prisma.shishaSelections.create({
     data: {
       Selection: "Exclusive",
       Price: 34.99,
@@ -46,7 +46,7 @@ async function main() {
   });
 
   // Seed shisha brands
-  const darksideBrand = await prisma.ShishaBrands.create({
+  const darksideBrand = await prisma.shishaBrands.create({
     data: {
       Brand: "Darkside",
       Selection_id: classicSelection.id,
@@ -55,7 +55,7 @@ async function main() {
     },
   });
 
-  const musthaveBrand = await prisma.ShishaBrands.create({
+  const musthaveBrand = await prisma.shishaBrands.create({
     data: {
       Brand: "Musthave",
       Selection_id: finestSelection.id,
@@ -64,7 +64,7 @@ async function main() {
     },
   });
 
-  const boncheBrand = await prisma.ShishaBrands.create({
+  const boncheBrand = await prisma.shishaBrands.create({
     data: {
       Brand: "Bonche",
       Selection_id: exclusiveSelection.id,
@@ -74,7 +74,7 @@ async function main() {
   });
 
   // Seed shisha flavors
-  await prisma.ShishaFlavors.create({
+  await prisma.shishaFlavors.create({
     data: {
       name: "Pistachio",
       description: "Rich and nutty flavor",
@@ -83,7 +83,7 @@ async function main() {
     },
   });
 
-  await prisma.ShishaFlavors.create({
+  await prisma.shishaFlavors.create({
     data: {
       name: "Coconut",
       description: "Tropical coconut taste",
@@ -92,7 +92,7 @@ async function main() {
     },
   });
 
-  await prisma.ShishaFlavors.create({
+  await prisma.shishaFlavors.create({
     data: {
       name: "Wild Strawberry",
       description: "Sweet and fruity",
@@ -101,7 +101,7 @@ async function main() {
     },
   });
 
-  await prisma.ShishaFlavors.create({
+  await prisma.shishaFlavors.create({
     data: {
       name: "Rocketman",
       description: "Premium cigar blend",
@@ -110,24 +110,41 @@ async function main() {
     },
   });
 
+  // Seed drink categories first
+  const alcoholicCategory = await prisma.drinkCategories.create({
+    data: {
+      Category: "Alcoholic Drinks",
+      Order: 1,
+      imageUrl: "https://example.com/alcoholic.jpg",
+    },
+  });
+
+  const juiceCategory = await prisma.drinkCategories.create({
+    data: {
+      Category: "Juices",
+      Order: 2,
+      imageUrl: "https://example.com/juice.jpg",
+    },
+  });
+
   // Seed some drinks
-  await prisma.Drinks.create({
+  await prisma.drinks.create({
     data: {
       name: "Mojito",
       description: "Fresh mint and lime cocktail",
       price: 12.99,
-      category_id: BigInt(1), // Use BigInt for category_id
+      category_id: alcoholicCategory.id,
       type: "Alcoholic",
       imageUrl: "https://example.com/mojito.jpg",
     },
   });
 
-  await prisma.Drinks.create({
+  await prisma.drinks.create({
     data: {
       name: "Fresh Orange Juice",
       description: "Freshly squeezed orange juice",
       price: 4.99,
-      category_id: BigInt(2), // Use BigInt for category_id
+      category_id: juiceCategory.id,
       type: "Juice",
       imageUrl: "https://example.com/orange-juice.jpg",
     },
