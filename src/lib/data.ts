@@ -107,6 +107,7 @@ export const getDrinkCategories = cache(async (): Promise<DrinkCategory[]> => {
           category_id: drink.category_id.toString(),
           quantity: drink.quantity ? Number(drink.quantity) : null,
           order: drink.order ? Number(drink.order) : null,
+          unit_type: (drink.unit_type === "ML" ? "мл" : "гр") as "мл" | "гр",
         })),
       };
 
@@ -122,6 +123,7 @@ export const getDrinkCategories = cache(async (): Promise<DrinkCategory[]> => {
           type: "special",
           quantity: drink.quantity ? Number(drink.quantity) : null,
           order: 999999, // High order number to put at bottom
+          unit_type: (drink.unit_type === "ML" ? "мл" : "гр") as "мл" | "гр",
         }));
 
         categoryData.Drinks = (
