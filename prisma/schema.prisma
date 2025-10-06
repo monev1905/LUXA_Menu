@@ -28,7 +28,7 @@ model Drinks {
   imageUrl    String?
   quantity    Decimal?
   order       Decimal?
-  unit_type   UnitType  @default(мл)
+  unit_type   UnitType  @default(ML)
   DrinkCategories DrinkCategories @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
