@@ -4,9 +4,9 @@
 # LUXA MENU - STAGING DEPLOYMENT
 # ========================================
 # This script deploys to STAGING
-# URL: http://staging.noirvarna.com
-# Database: menu_staging
-# Directory: /var/www/luxa-menu-staging/
+# URL: [REDACTED]
+# Database: [REDACTED]
+# Directory: [REDACTED]
 # ========================================
 
 # Safety check - ensure we're on staging server

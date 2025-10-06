@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import ShishaTypes from "@/components/ShishaTypes";
 import LeafMenu from "@/components/LeafMenu";
+import { ShishaSelection, ShishaFlavor } from "@/lib/data";
 
 const SHISHA_TYPES = [
   { key: "blond", label: "Blond" },
@@ -8,52 +8,30 @@ const SHISHA_TYPES = [
   { key: "cigar", label: "Cigar" },
 ];
 
-interface MenuItem {
-  id: string;
-  name: string;
-  price?: number;
-  isActive: boolean;
-  type?: string;
-  brand?: string;
-  imageUrl?: string;
-}
-
 interface ShishaMenuProps {
   typeParam: string | null;
   shishaType: string | null;
   onShishaTypeChange: (type: string | null) => void;
+  shishaSelections: ShishaSelection[];
+  shishaFlavors: ShishaFlavor[];
 }
 
 export default function ShishaMenu({
   typeParam,
   shishaType,
   onShishaTypeChange,
+  shishaSelections,
+  shishaFlavors,
 }: ShishaMenuProps) {
-  const [, setItems] = useState<MenuItem[]>([]);
-  const [selections, setSelections] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      fetch("/api/shisha-flavors").then((res) => res.json()),
-      fetch("/api/shisha-selections").then((res) => res.json()),
-    ]).then(([flavorsData, selectionsData]) => {
-      setItems(flavorsData);
-      setSelections(selectionsData);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="text-center text-gray-500 py-10">Loading shisha...</div>
-    );
-  }
-
   if (!typeParam && !shishaType) {
     // Show shisha type selection
-    return <ShishaTypes onTypeSelect={onShishaTypeChange} />;
+    return (
+      <ShishaTypes
+        onTypeSelect={onShishaTypeChange}
+        shishaSelections={shishaSelections}
+        shishaFlavors={shishaFlavors}
+      />
+    );
   }
 
   // Show selections for the selected type
@@ -68,7 +46,7 @@ export default function ShishaMenu({
         // For dark leaf, show brands directly (no dropdown)
         if (activeType === "dark") {
           // Find the "Finest" selection and get its dark brands
-          const finestSelection = selections.find(
+          const finestSelection = shishaSelections.find(
             (selection) => selection.selection?.trim() === "Finest"
           );
 
@@ -86,8 +64,8 @@ export default function ShishaMenu({
           }
 
           const darkBrands = finestSelection.brands
-            .filter((brand: any) => brand.type === "dark")
-            .map((brand: any, brandIndex: number) => ({
+            .filter((brand) => brand.type === "dark")
+            .map((brand, brandIndex: number) => ({
               ...brand,
               id: brand.id || `brand-${brandIndex}`,
             }));
@@ -98,12 +76,22 @@ export default function ShishaMenu({
               leafType="dark"
               selectionId={finestSelection.id}
               brands={darkBrands}
+              shishaSelections={shishaSelections}
+              shishaFlavors={shishaFlavors}
             />
           );
         }
         // For cigar leaf, show the new brand/flavor interface
         else if (activeType === "cigar") {
-          return <LeafMenu key="cigar" leafType="cigar" selectionId="3" />;
+          return (
+            <LeafMenu
+              key="cigar"
+              leafType="cigar"
+              selectionId="3"
+              shishaSelections={shishaSelections}
+              shishaFlavors={shishaFlavors}
+            />
+          );
         }
         // For blond leaf, show placeholder UI
         else if (activeType === "blond") {

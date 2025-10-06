@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: NextRequest,
@@ -8,17 +8,19 @@ export async function PATCH(
   try {
     const { id } = await params;
     const data = await req.json();
-    
+
     await prisma.shishaBrands.update({
       where: { id: BigInt(id) },
       data: {
-        logoUrl: data.logoUrl
-      }
+        logoUrl: data.logoUrl,
+      },
     });
-    
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error updating brand:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

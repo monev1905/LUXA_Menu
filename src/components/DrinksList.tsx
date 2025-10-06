@@ -1,75 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import MenuCard from "./MenuCard";
-
-interface Drink {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  isActive: boolean;
-  category_id: string;
-  type: string | null;
-  imageUrl: string | null;
-  quantity: number | null;
-  order: number | null;
-  unit_type: "мл" | "гр";
-}
-
-interface DrinkCategory {
-  id: string;
-  Category: string;
-  Order: number | null;
-  imageUrl: string | null;
-  Drinks: Drink[];
-}
+import { DrinkCategory } from "@/lib/data";
 
 interface DrinksListProps {
   sectionParam: string | null;
+  drinkCategories: DrinkCategory[];
 }
 
-export default function DrinksList({ sectionParam }: DrinksListProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [categories, setCategories] = useState<DrinkCategory[]>([]); // Used to find selectedCategory
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] =
-    useState<DrinkCategory | null>(null);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch("/api/drink-categories");
-        if (!response.ok) {
-          throw new Error("Failed to fetch drink categories");
-        }
-        const data = await response.json();
-        setCategories(data);
-
-        // Find the selected category based on sectionParam
-        if (sectionParam) {
-          const category = data.find(
-            (cat: DrinkCategory) =>
-              cat.Category.toLowerCase().replace(/\s+/g, "-") === sectionParam
-          );
-          setSelectedCategory(category || null);
-        }
-      } catch (error) {
-        console.error("Error fetching drink categories:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCategories();
-  }, [sectionParam]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-accent text-xl">Loading drinks...</div>
-      </div>
-    );
-  }
+export default function DrinksList({
+  sectionParam,
+  drinkCategories,
+}: DrinksListProps) {
+  // Find the selected category based on sectionParam
+  const selectedCategory = sectionParam
+    ? drinkCategories.find(
+        (cat) =>
+          cat.Category.toLowerCase().replace(/\s+/g, "-") === sectionParam
+      )
+    : null;
 
   if (!selectedCategory) {
     return (

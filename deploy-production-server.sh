@@ -4,9 +4,9 @@
 # LUXA MENU - PRODUCTION DEPLOYMENT
 # ========================================
 # This script deploys to PRODUCTION
-# URL: http://noirvarna.com
-# Database: menu_dev
-# Directory: /var/www/luxa-menu/
+# URL: [REDACTED]
+# Database: [REDACTED]
+# Directory: [REDACTED]
 # ========================================
 
 # Safety check - ensure we're on production server

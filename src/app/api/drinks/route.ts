@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
     const drink = await prisma.drinks.create({ data: sanitizedData });
     return NextResponse.json(drink, { status: 201 });
   } catch (error) {
-    console.error("Error creating drink:", error);
     return NextResponse.json(
       { error: "Failed to create drink" },
       { status: 500 }
@@ -141,7 +140,6 @@ export async function PATCH(req: NextRequest) {
     });
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating drink:", error);
     return NextResponse.json(
       { error: "Drink not found or update failed" },
       { status: 400 }
@@ -165,7 +163,6 @@ export async function DELETE(req: NextRequest) {
     await prisma.drinks.delete({ where: { id: BigInt(id) } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting drink:", error);
     return NextResponse.json(
       { error: "Drink not found or delete failed" },
       { status: 400 }

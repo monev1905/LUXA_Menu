@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
     const item = await prisma.drinks.create({ data: sanitizedData });
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
-    console.error("Error creating menu item:", error);
     return NextResponse.json(
       { error: "Failed to create menu item" },
       { status: 500 }
@@ -147,7 +146,6 @@ export async function PATCH(req: NextRequest) {
     });
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating menu item:", error);
     return NextResponse.json(
       { error: "Item not found or update failed" },
       { status: 400 }
