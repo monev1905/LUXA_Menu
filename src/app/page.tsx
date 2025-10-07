@@ -6,25 +6,17 @@ import Image from "next/image";
 
 const HomePage: React.FC = () => {
   const router = useRouter();
-  const [isProduction, setIsProduction] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [isPreloading, setIsPreloading] = useState(false);
-  const [preloadComplete, setPreloadComplete] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    setIsProduction(process.env.NEXT_PUBLIC_ENVIRONMENT === "production");
-
-    // Pre-load database data in the background
-    if (!isProduction) {
-      preloadMenuData();
-    }
-  }, [isProduction]);
+    preloadMenuData();
+  }, []);
 
   const preloadMenuData = async () => {
     try {
       setIsPreloading(true);
-      const startTime = Date.now();
 
       // Pre-load all menu data via API calls
       const [
@@ -46,7 +38,7 @@ const HomePage: React.FC = () => {
         shishaSelectionsRes.ok &&
         shishaFlavorsRes.ok
       ) {
-        setPreloadComplete(true);
+        // Preload successful
       } else {
         throw new Error("Some API requests failed");
       }
@@ -97,21 +89,8 @@ const HomePage: React.FC = () => {
         <div className="text-center z-10">
           <div className="text-2xl font-bold text-white mb-4">Loading...</div>
         </div>
-      ) : isProduction ? (
-        // Production - Show Coming Soon message
-        <div className="text-center z-10">
-          <div className="text-2xl font-bold text-white mb-4">
-            🚀 Coming Soon
-          </div>
-          <div className="text-lg text-white/90">
-            We&apos;re working hard to bring you something amazing!
-          </div>
-          <div className="text-sm mt-2 text-white/70">
-            Stay tuned for updates!
-          </div>
-        </div>
       ) : (
-        // Staging/Development - Show Welcome button that navigates to /menu
+        // Show Welcome button that navigates to /menu
         <div className="text-center z-10">
           <button
             onClick={handleWelcome}
