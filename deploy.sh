@@ -17,7 +17,9 @@ case $choice in
         read -p "Are you sure? (type 'yes' to continue): " confirm
         if [[ "$confirm" == "yes" ]]; then
             echo "🚀 Deploying to PRODUCTION..."
-            cd /var/www/luxa-menu && ./deploy-production-server.sh
+            cd /var/www/luxa-menu
+            chmod +x deploy-production-server.sh deploy-staging-server.sh deploy.sh
+            ./deploy-production-server.sh
         else
             echo "❌ Production deployment cancelled"
         fi
@@ -25,7 +27,9 @@ case $choice in
     2)
         echo ""
         echo "🚀 Deploying to STAGING..."
-        cd /var/www/luxa-menu-staging && ./deploy-staging-server.sh
+        cd /var/www/luxa-menu-staging
+        chmod +x deploy-production-server.sh deploy-staging-server.sh deploy.sh
+        ./deploy-staging-server.sh
         ;;
     *)
         echo "❌ Invalid choice. Please run the script again and choose 1 or 2."
