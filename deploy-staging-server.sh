@@ -22,6 +22,10 @@ echo "�� Deploying to STAGING..."
 # Navigate to project directory
 cd /var/www/luxa-menu-staging
 
+# Fix script permissions automatically
+echo "🔧 Fixing script permissions..."
+chmod +x deploy-production-server.sh deploy-staging-server.sh deploy.sh
+
 # Pull latest changes from main branch
 git pull origin main
 

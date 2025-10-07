@@ -31,6 +31,10 @@ echo " Deploying to PRODUCTION..."
 # Navigate to project directory
 cd /var/www/luxa-menu
 
+# Fix script permissions automatically
+echo "🔧 Fixing script permissions..."
+chmod +x deploy-production-server.sh deploy-staging-server.sh deploy.sh
+
 # Pull latest changes from repository
 echo "📥 Pulling latest changes from repository..."
 git pull origin main
